@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Star Background with Wavy Rainbow Text</title>
+    <style>
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('Dedicool.ttf');
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'CustomFont', 'Arial', sans-serif;
+            -webkit-user-select: none; 
+            -moz-user-select: none;    
+            -ms-user-select: none;     
+            user-select: none;         
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top of other content */
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 300px; /* Adjust as needed */
+            height: auto;
+            cursor: pointer;
+        }
+
+        .image {
+            width: 100%;
+            height: auto;
+        }
+
+        .star-field {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            animation: blink 2s infinite;
+            opacity: 0;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .center-text {
+            position: relative;
+            color: white;
+            font-size: 3em;
+            text-align: center;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            font-family: 'CustomFont', 'Arial', sans-serif;
+        }
+
+        .center-text span {
+            display: inline-block;
+            animation: wave 1.5s infinite ease-in-out;
+            font-weight: bold;
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes rainbow {
+            0% { color: red; }
+            14% { color: orange; }
+            28% { color: yellow; }
+            42% { color: green; }
+            57% { color: blue; }
+            71% { color: indigo; }
+            85% { color: violet; }
+            100% { color: red; }
+        }
+
+        .typewriter-text {
+            position: relative;
+            color: white;
+            font-size: 1.5em;
+            text-align: center;
+            z-index: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid white; 
+            margin-top: 20px;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: white; }
+        }
+
+#quote {
+    position: relative;
+    display: inline-block; /* Ensure it doesn't span full width */
+    white-space: nowrap;
+    overflow: hidden;
+    color: white; /* Set text color to white */
+    border-right: 2px solid white; /* Caret color */
+    font-size: 1.5em;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes erasing {
+    from { width: 100%; }
+    to { width: 0; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: white; }
+}
+
+.typing {
+    animation: typing 4s steps(40, end) forwards, blink-caret 0.75s step-end infinite;
+}
+
+.erasing {
+    animation: erasing 2s steps(20, end) forwards;
+}
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay">
+        <div class="container" id="skull-container">
+            <img src="laugh.gif" alt="Skull Image" class="image">
+        </div>
+    </div>
+
+
+    <audio id="music" src="smackthat.mp3" preload="auto"></audio>
+
+    <div class="star-field">
+    </div>
+
+    <div class="center-text" id="rainbow-text">
+    </div>
+
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center">
+        <p id="quote" class="text-sm text-white"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const skullContainer = document.getElementById('skull-container');
+            const music = document.getElementById('music');
+            const overlay = document.getElementById('overlay');
+
+            skullContainer.addEventListener('click', function() {
+                music.play();
+                setTimeout(() => {
+                    overlay.style.display = 'none'; 
+                }, 100);
+            });
+        });
+
+        const starField = document.querySelector('.star-field');
+        const numStars = 200;
+
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.left = Math.random() * 100 + 'vw';
+
+            star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+            star.style.animationDelay = Math.random() * 2 + 's';
+
+            starField.appendChild(star);
+        }
+
+        const text = "Haha, you died!";
+        const rainbowTextContainer = document.getElementById('rainbow-text');
+
+        text.split('').forEach((letter, index) => {
+            const span = document.createElement('span');
+            span.textContent = letter;
+            span.style.animationDelay = `${index * 0.1}s`;
+            span.style.animationName = 'wave, rainbow';
+            span.style.animationDuration = '1.5s, 3s';
+            span.style.animationIterationCount = 'infinite';
+            rainbowTextContainer.appendChild(span);
+        });
+
+const quotes = [
+    "You died LOL!",
+    "Imagine searching up this website",
+    "Why would you click the skull?",
+    "You went out of your way to search this up!",
+    "You died to nervy and elky"
+];
+
+let lastQuote = '';
+
+function getRandomQuote() {
+    let randomIndex;
+    let newQuote;
+
+    do {
+        randomIndex = Math.floor(Math.random() * quotes.length);
+        newQuote = quotes[randomIndex];
+    } while (newQuote === lastQuote);
+
+    lastQuote = newQuote;
+    return newQuote;
+}
+
+function applyRandomQuote() {
+    const quoteElement = document.getElementById('quote');
+    const randomQuote = getRandomQuote();
+
+    quoteElement.textContent = randomQuote;
+    quoteElement.classList.remove('erasing');
+    quoteElement.classList.add('typing');
+
+    const typingDuration = 4000;
+    const erasingDuration = 2000;
+
+    setTimeout(() => {
+        quoteElement.classList.remove('typing');
+        quoteElement.classList.add('erasing');
+    }, typingDuration);
+
+
+    setTimeout(() => {
+        quoteElement.textContent = '';
+        applyRandomQuote();
+    }, typingDuration + erasingDuration);
+}
+
+window.onload = applyRandomQuote;
+
+    </script>
+</body>
+</html>
