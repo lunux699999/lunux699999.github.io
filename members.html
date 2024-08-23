@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members</title>
+    <style>
+        /* Custom Font */
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('Dedicool.ttf') format('truetype');
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: white; /* Set all text color to white */
+            font-family: 'CustomFont', Arial, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+			-webkit-user-select: none; 
+            -moz-user-select: none;    
+            -ms-user-select: none;     
+            user-select: none;       
+        }
+
+        /* Star Field */
+        .star-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            animation: blink 2s infinite;
+            opacity: 0;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Content Container */
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+			cursor: pointer;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8B00FF);
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: rainbow 3s infinite;
+        }
+
+        @keyframes rainbow {
+            0%, 100% {
+                background-position: 0 0;
+            }
+            50% {
+                background-position: 100% 0;
+            }
+        }
+
+        /* ASCII Art Styling */
+        .ascii-art {
+            font-size: 1rem; /* Adjust as necessary */
+            white-space: pre; /* Preserve formatting */
+            background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #4B0082, #8B00FF);
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: rainbow 3s infinite;
+            display: inline-block; /* Keeps the art inline */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Card Layout */
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+            border: 2px solid white;
+            border-radius: 8px;
+            width: 300px;
+            padding: 20px;
+            text-align: left;
+            position: relative;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            color: white; /* Title in each card set to white */
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: white; /* Text in each card set to white */
+        }
+
+        .card a {
+            color: white; /* Links set to white */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+		  .sparkle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: transparent;
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 1s, opacity 1s;
+  }
+  .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top of other content */
+        }
+		        .image {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay">
+        <div class="container" id="skull-container">
+            <img src="laugh.gif" alt="Skull Image" class="image">
+        </div>
+    </div>
+	    <audio id="music" src="RWM.mp3" preload="auto"></audio>
+    <div class="star-field"></div>
+
+    <div class="container">
+        <pre class="ascii-art">
+    __       __                          __                                      
+   /  \     /  |                        /  |                                     
+   $$  \   /$$ |  ______   _____  ____  $$ |____    ______    ______    _______   
+   $$$  \ /$$$ | /      \ /     \/    \ $$      \  /      \  /      \  /       |  
+   $$$$  /$$$$ |/$$$$$$  |$$$$$$ $$$$  |$$$$$$$  |/$$$$$$  |/$$$$$$  |/$$$$$$$/   
+   $$ $$ $$/$$ |$$    $$ |$$ | $$ | $$ |$$ |  $$ |$$    $$ |$$ |  $$/ $$      \   
+   $$ |$$$/ $$ |$$$$$$$$/ $$ | $$ | $$ |$$ |__$$ |$$$$$$$$/ $$ |       $$$$$$  |  
+   $$ | $/  $$ |$$       |$$ | $$ | $$ |$$    $$/ $$       |$$ |      /     $$/   
+   $$/      $$/  $$$$$$$/ $$/  $$/  $$/ $$$$$$$/   $$$$$$$/ $$/       $$$$$$$/    
+        </pre>
+
+        <div class="grid">
+            <div class="card">
+                <img src="nervy.jpg" alt="NERVY">
+                <h3>NERVY</h3>
+                <p>I'm cheating, literally cheating</p>
+            </div>
+            <div class="card">
+                <img src="zeus.jpg" alt="Zeus / Zeuski">
+                <h3>Zeus / Zeuski</h3>
+                <p>Been in com since 2008, All hes trying to do sweep up like a wooden brush, and fuck that oliver giles nigga</p>
+				<a href="https://files.catbox.moe/74lvso.mp4" class="clickable-text">Click me to see my latest video</a>
+            </div>
+            <div class="card">
+                <img src="elky.jpg" alt="ELKY">
+                <h3>ELKY</h3>
+                <p>Mess with the rats</p>
+            </div>
+                    <div class="card">
+                <img src="4ep.gif" alt="4EP">
+                <h3>4EP</h3>
+                <p>young chinese boys scatter to me like rats</p>
+            </div>
+                    <div class="card">
+                <img src="KYLO.jpg" alt="KYLO">
+                <h3>KYLO</h3>
+                <p>My little pony enthusiast</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const starField = document.querySelector('.star-field');
+        const numStars = 200;
+
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.left = Math.random() * 100 + 'vw';
+
+            star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+            star.style.animationDelay = Math.random() * 2 + 's';
+
+            starField.appendChild(star);
+        }
+	</script>
+	
+    <audio id="background-music" preload="auto" loop>
+        <source src="members/RWM.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+     <script>
+        window.onload = function() {
+            const music = document.getElementById('background-music');
+
+            music.play().catch(error => {
+                console.error('Playback failed on the new page:', error);
+            });
+        };
+    </script>
+	    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const skullContainer = document.getElementById('skull-container');
+            const music = document.getElementById('music');
+            const overlay = document.getElementById('overlay');
+
+            skullContainer.addEventListener('click', function() {
+                music.play();
+                setTimeout(() => {
+                    overlay.style.display = 'none'; 
+                }, 100);
+            });
+        });
+		</script>
+</body>
+</html>
