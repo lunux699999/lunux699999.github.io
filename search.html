@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeakCheck Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: white;
+        }
+        input, select, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #loading {
+            display: none;
+            font-size: 18px;
+            color: yellow;
+        }
+        #result {
+            white-space: pre-wrap;
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        function checkLeak() {
+            let query = document.getElementById("query").value;
+            let type = document.getElementById("type").value;
+            let resultBox = document.getElementById("result");
+            let loadingText = document.getElementById("loading");
+            
+            if (query === "") {
+                alert("Please enter an email or username.");
+                return;
+            }
+            
+            resultBox.innerHTML = "";
+            loadingText.style.display = "block";
+
+            fetch("check.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `query=${encodeURIComponent(query)}&type=${encodeURIComponent(type)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingText.style.display = "none";
+                if (data.error) {
+                    resultBox.innerHTML = `<span style='color: red;'>Error: ${data.error}</span>`;
+                } else if (data.found) {
+                    let breaches = data.leaks.map(breach => `📌 ${breach.name} (${breach.date}) - ${breach.data}`).join("\n");
+                    resultBox.innerHTML = `<strong>Breaches Found:</strong>\n${breaches}`;
+                } else {
+                    resultBox.innerHTML = `<span style='color: green;'>✅ No leaks found!</span>`;
+                }
+            })
+            .catch(error => {
+                loadingText.style.display = "none";
+                resultBox.innerHTML = `<span style='color: red;'>Error checking leaks.</span>`;
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>🔍 LeakCheck Tool</h1>
+    <input type="text" id="query" placeholder="Enter email or username">
+    <select id="type">
+        <option value="email">Email</option>
+        <option value="username">Username</option>
+    </select>
+    <button onclick="checkLeak()">Check</button>
+    
+    <p id="loading">⏳ Checking for leaks...</p>
+    <pre id="result"></pre>
+</body>
+</html>
