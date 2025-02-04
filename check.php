@@ -1,11 +1,13 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 header("Content-Type: application/json");
 
-// LeakCheck API Key (replace with yours)
+// LeakCheck API Key (Replace with your real key)
 $api_key = "1ee95568f758781d9313fa5457fa1e6b90e8d289";
 $leakcheck_url = "https://leakcheck.io/api";
 
-// Get POST data
+// Get query parameters
 $query = $_POST['query'] ?? '';
 $type = $_POST['type'] ?? 'email';
 
@@ -22,5 +24,14 @@ $params = http_build_query([
 ]);
 
 $response = file_get_contents("$leakcheck_url?$params");
+
+// Debugging: Log raw API response
+file_put_contents("debug_log.txt", $response);
+
+if (!$response) {
+    echo json_encode(["error" => "Failed to reach LeakCheck API"]);
+    exit();
+}
+
 echo $response;
 ?>
