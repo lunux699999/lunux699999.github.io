@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AMBER</title>
+  <style>
+    @font-face {
+      font-family: 'CustomFont';
+      src: url('Dedicool.ttf') format('truetype');
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-family: 'CustomFont', 'Arial', sans-serif;
+      user-select: none;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 300px;
+      cursor: pointer;
+    }
+
+    .image {
+      width: 100%;
+      height: auto;
+    }
+
+    .star-field {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      animation: blink 2s infinite;
+      opacity: 0;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .center-text {
+      position: relative;
+      font-size: 3em;
+      text-align: center;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .center-text span {
+      display: inline-block;
+      animation: wave 1.5s infinite ease-in-out, rainbow 3s infinite;
+      font-weight: bold;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes rainbow {
+      0% { color: red; }
+      14% { color: orange; }
+      28% { color: yellow; }
+      42% { color: green; }
+      57% { color: blue; }
+      71% { color: indigo; }
+      85% { color: violet; }
+      100% { color: red; }
+    }
+
+    .top-text {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      background-color: black;
+      padding: 10px 0;
+      z-index: 10;
+    }
+
+    .clickable-text {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .clickable-text:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay">
+    <div class="container" id="skull-container">
+      <img src="download.png" alt="download" class="image">
+    </div>
+  </div>
+
+  <audio id="music" src="lie.mp3" preload="auto"></audio>
+
+  <div class="star-field"></div>
+
+  <a href="file.zip" download class="center-text" id="rainbow-text"></a>
+
+  <div class="top-text">
+    <a href="members" class="clickable-text" id="play-and-navigate">Members</a>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const skullContainer = document.getElementById('skull-container');
+      const music = document.getElementById('music');
+      const overlay = document.getElementById('overlay');
+
+      skullContainer.addEventListener('click', function () {
+        music.play().catch(err => console.warn("Autoplay blocked:", err));
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 100);
+      });
+    });
+
+    const starField = document.querySelector('.star-field');
+    const numStars = 200;
+
+    for (let i = 0; i < numStars; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+      star.style.animationDelay = Math.random() * 2 + 's';
+      starField.appendChild(star);
+    }
+
+    const text = "Download";
+    const rainbowTextContainer = document.getElementById('rainbow-text');
+
+    text.split('').forEach((letter, index) => {
+      const span = document.createElement('span');
+      span.textContent = letter;
+      span.style.animationDelay = `${index * 0.1}s`;
+      rainbowTextContainer.appendChild(span);
+    });
+  </script>
+</body>
+</html>
