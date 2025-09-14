@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shun.io</title>
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: linear-gradient(135deg, #0a0a0a, #1a002a 30%, #0a0a0a 70%);
+  background-size: 800% 800%;
+  animation: subtleBG 20s ease infinite;
+  color: #fff;
+}
+@keyframes subtleBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.dynamic-gradient,
+.logo h1,
+.rating,
+}
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #1a001f, #330044);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 15px rgba(192,0,255,0.5);
+}
+.logo { display: flex; align-items: center; gap: 0.5rem; }
+.logo img { height: 40px; }
+.logo h1 { font-size: 1.5rem; margin: 0; }
+nav { display: flex; gap: 1rem; }
+nav a {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+  background: rgba(128,0,255,0.2);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 0 calc(15px * var(--glow-intensity,1)) rgba(128,0,255,0.4);
+  transition: transform 0.2s, box-shadow 0.1s ease;
+  --glow-intensity:1;
+}
+nav a:hover {
+  transform: scale(1.05);
+  background: rgba(192,0,255,0.3);
+  box-shadow: 0 0 calc(25px * var(--glow-intensity,1)) rgba(192,0,255,0.6);
+}
+.search-bar {
+  position: relative;
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  background: rgba(128,0,255,0.2);
+  margin-left: 1rem;
+  box-shadow: 0 0 calc(15px * var(--glow-intensity,1)) rgba(128,0,255,0.4);
+  transition: box-shadow 0.2s ease;
+}
+.search-bar input {
+  padding: 0.5rem 1rem;
+  border: none;
+  outline: none;
+  border-radius: 12px;
+  width: 220px;
+  color: #fff;
+  font-weight: 500;
+  background: linear-gradient(135deg, rgba(128,0,255,0.3), rgba(255,0,200,0.3), rgba(192,0,255,0.3));
+  backdrop-filter: blur(12px);
+  background-size: 200% 200%;
+  animation: liquidGlass 4s linear infinite, glowPulse 2s ease-in-out infinite alternate;
+  box-shadow: 0 0 calc(15px * var(--glow-intensity,1)) rgba(128,0,255,0.4);
+  transition: box-shadow 0.1s ease;
+  --glow-intensity:1;
+}
+@keyframes liquidGlass {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 calc(15px * var(--glow-intensity,1)) rgba(128,0,255,0.4); }
+  50% { box-shadow: 0 0 calc(35px * var(--glow-intensity,1)) rgba(192,0,255,0.6); }
+  100% { box-shadow: 0 0 calc(15px * var(--glow-intensity,1)) rgba(128,0,255,0.4); }
+}
+.player {
+  display: none;
+  padding: 1rem 2rem;
+  animation: fadeIn 0.6s ease-in-out;
+  position: relative;
+  --glow-intensity:1;
+}
+.player iframe {
+  width: 100%;
+  height: 500px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 0 calc(35px * var(--glow-intensity,1)) rgba(192,0,255,0.6), 0 0 60px rgba(128,0,255,0.3) inset;
+  transition: box-shadow 0.3s ease;
+}
+.player::after {
+  content:'';
+  position:absolute;
+  width:100%; height:100%;
+  top:0; left:0;
+  pointer-events:none;
+  border-radius:12px;
+  background: radial-gradient(circle at var(--glow-x,50%) var(--glow-y,50%), rgba(255,128,255,0.15) calc(15px * var(--glow-intensity,1)), transparent 60%);
+  transition: background 0.05s;
+}
+section { padding: 2rem 0 1rem 2rem; position: relative; }
+section h2 { color: #ff00c8; margin: 0 0 1rem 0.5rem; font-size: 1.4rem; }
+.movie-row-wrapper { position: relative; }
+.movie-row { display: flex; gap: 1rem; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 1rem; }
+.movie-row::-webkit-scrollbar { display: none; }
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #8a00ff, #ff00c8);
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  width:48px; height:48px;
+  display:flex; justify-content:center; align-items:center;
+  border-radius:50%;
+  z-index:10;
+  transition: transform 0.2s, background 0.3s;
+  box-shadow:0 0 15px rgba(192,0,255,0.6);
+}
+.scroll-btn:hover { transform: scale(1.2); background: linear-gradient(135deg, #ff00c8, #6a00ff); }
+.scroll-left { left:0.5rem; }
+.scroll-right { right:0.5rem; }
+.movie-card { flex:0 0 160px; background:#1a0024; border-radius:12px; overflow:hidden; position:relative; cursor:pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; opacity:0; transform:scale(0.9); animation:popIn 0.5s forwards; box-shadow:0 0 calc(15px * var(--glow-intensity,1)) rgba(192,0,255,0.2);}
+.movie-card img { width:100%; display:block; border-radius:12px; }
+.movie-info { padding:0.4rem; }
+.movie-info h3 { font-size:0.9rem; margin:0.2rem 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.movie-info p { font-size:0.75rem; color:#bbb; margin:0; }
+.rating, .type-badge { background: linear-gradient(90deg, #6a00ff, #c000ff, #ff00c8, #8a00ff); background-size:800% 800%; animation:gradientBG 15s ease infinite; -webkit-background-clip: padding-box; background-clip: padding-box; color:#fff!important; position:absolute; top:8px; padding:0.3rem 0.6rem; border-radius:20px; font-size:0.75rem; font-weight:bold; box-shadow:0 0 calc(10px * var(--glow-intensity,1)) rgba(192,0,255,0.6); text-shadow:0 1px 2px rgba(0,0,0,0.45);}
+.movie-card:hover { transform:scale(1.1); box-shadow:0 0 calc(25px * var(--glow-intensity,1)) rgba(192,0,255,0.8); }
+@keyframes popIn { from { opacity:0; transform:scale(0.9);} to {opacity:1; transform:scale(1);} }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="https://files.catbox.moe/9o8pf5.png" alt="Logo" />
+    <h1>Shun.io</h1>
+  </div>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Movies</a>
+    <a href="#">TV Shows</a>
+    <a href="#">Anime</a>
+  </nav>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search..." oninput="liveSearch()" />
+  </div>
+</header>
+<div class="player" id="playerSection">
+  <iframe id="playerFrame" src="" allowfullscreen></iframe>
+</div>
+<main id="content"></main>
+<script>
+const API_KEY = "c1ee0ca8883b37edc7b96ed780a17f5d";
+const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+const content = document.getElementById("content");
+let genres=[], currentFilter="all";
+function renderRow(items, container, type){
+  items.forEach((item,i)=>{
+    if(!item.poster_path) return;
+    const card=document.createElement("div");
+    card.className="movie-card";
+    card.style.animationDelay=`${i*0.05}s`;
+    card.innerHTML=`
+      <img src="${IMG_BASE+item.poster_path}" alt="${item.title||item.name}" />
+      <div class="rating">${item.vote_average.toFixed(1)}</div>
+      <div class="type-badge">${type==='movie'?'Movie':'TV'}</div>
+      <div class="movie-info"><h3>${item.title||item.name}</h3><p>${type==='movie'?'Movie':'TV Show'}</p></div>
+    `;
+    card.onclick = ()=>{ 
+      type==='movie'?loadPlayer(item.id):loadTVPlayer(item.id);
+      window.scrollTo({top:0,behavior:'smooth'});
+    };
+    container.appendChild(card);
+  });
+}
+function createSection(title,id){
+  const section=document.createElement("section");
+  section.innerHTML=`<h2>${title}</h2>
+    <div class="movie-row-wrapper">
+      <button class="scroll-btn scroll-left" onclick="scrollRow('${id}',-1)">&#8249;</button>
+      <div class="movie-row" id="${id}"></div>
+      <button class="scroll-btn scroll-right" onclick="scrollRow('${id}',1)">&#8250;</button>
+    </div>`;
+  content.appendChild(section);
+}
+function scrollRow(id,dir){document.getElementById(id).scrollBy({left:dir*400,behavior:'smooth'});}
+async function loadContent(){
+  content.innerHTML='';
+  if(currentFilter==="all" || currentFilter==="movie") {
+    createSection("🔥 Trending Movies","trendingMovies");
+    const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}&page=1`);
+    renderRow((await res.json()).results,document.getElementById("trendingMovies"),"movie");
+  }
+  if(currentFilter==="all" || currentFilter==="tv") {
+    createSection("📺 Trending TV Shows","trendingTV");
+    const res = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}&page=1`);
+    renderRow((await res.json()).results,document.getElementById("trendingTV"),"tv");
+  }
+  for(const genre of genres){
+    let movieResults=[],tvResults=[];
+    if(currentFilter!=="tv") {
+      const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genre.id}&page=1`);
+      movieResults=(await res.json()).results;
+    }
+    if(currentFilter!=="movie") {
+      const res = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=${genre.id}&page=1`);
+      tvResults=(await res.json()).results;
+    }
+    if(movieResults.length || tvResults.length){
+      createSection(`🎭 ${genre.name}`,`genre-${genre.id}`);
+      if(movieResults.length) renderRow(movieResults,document.getElementById(`genre-${genre.id}`),"movie");
+      if(tvResults.length) renderRow(tvResults,document.getElementById(`genre-${genre.id}`),"tv");
+    }
+  }
+}
+function loadPlayer(id){
+  const src = `https://vidora.su/movie/${id}?autoplay=true&colour=ff00c8&logo=https://upload.wikimedia.org/wikipedia/commons/7/7a/Cinema_icon.png`;
+  document.getElementById("playerFrame").src = src;
+  document.getElementById("playerSection").style.display="block";
+  localStorage.setItem('lastVideo', src);
+}
+function loadTVPlayer(id){
+  const src = `https://vidora.su/tv/${id}/1/1?colour=ff00c8&autoplay=true&autonextepisode=true&backbutton=https%3A%2F%2Fvidora.su%2F&pausescreen=true`;
+  document.getElementById("playerFrame").src = src;
+  document.getElementById("playerSection").style.display="block";
+  localStorage.setItem('lastVideo', src);
+}
+window.addEventListener('load', () => {
+  const lastVideo = localStorage.getItem('lastVideo');
+  if(lastVideo){
+    document.getElementById("playerSection").style.display = "block";
+    document.getElementById("playerFrame").src = lastVideo;
+  }
+});
+let searchTimeout;
+async function liveSearch(){
+  clearTimeout(searchTimeout);
+  searchTimeout=setTimeout(async()=>{
+    const query=document.getElementById("searchInput").value.trim();
+    content.innerHTML='';
+    if(!query){await loadContent(); return;}
+    createSection(`🔎 Movie Results for "${query}"`,"searchResultsMovies");
+    const movies=await (await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=1`)).json();
+    renderRow(movies.results,document.getElementById("searchResultsMovies"),"movie");
+    createSection(`🔎 TV Results for "${query}"`,"searchResultsTV");
+    const tv=await (await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=1`)).json();
+    renderRow(tv.results,document.getElementById("searchResultsTV"),"tv");
+  },400);
+}
+document.querySelectorAll("nav a").forEach(a=>{
+  a.addEventListener("click", e=>{
+    e.preventDefault();
+    if(a.textContent==="Home") currentFilter="all";
+    else if(a.textContent==="Movies") currentFilter="movie";
+    else if(a.textContent==="TV Shows") currentFilter="tv";
+    else if(a.textContent==="Anime") currentFilter="anime";
+    loadContent();
+  });
+});
+(async()=>{
+  const res = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`);
+  genres = (await res.json()).genres;
+  loadContent();
+})();
+document.addEventListener('mousemove', e => {
+  const player = document.querySelector('.player');
+  if(player){
+    const rect = player.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    player.style.setProperty('--glow-x', `${x}px`);
+    player.style.setProperty('--glow-y', `${y}px`);
+    const centerX = rect.width/2;
+    const centerY = rect.height/2;
+    const dist = Math.hypot(centerX - x, centerY - y);
+    const maxDist = Math.hypot(centerX, centerY);
+    const intensity = 1.5 - (dist/maxDist);
+    player.style.setProperty('--glow-intensity', intensity);
+  }
+  document.querySelectorAll('nav a').forEach(btn=>{
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dist = Math.hypot(cx - e.clientX, cy - e.clientY);
+    const maxDist = 300;
+    const intensity = Math.max(0.5, 1.5 - dist/maxDist);
+    btn.style.setProperty('--glow-intensity', intensity);
+  });
+  const search = document.querySelector('.search-bar input');
+  if(search){
+    const rect = search.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dist = Math.hypot(cx - e.clientX, cy - e.clientY);
+    const maxDist = 300;
+    const intensity = Math.max(0.5, 1.5 - dist/maxDist);
+    search.style.setProperty('--glow-intensity', intensity);
+  }
+  document.querySelectorAll('.movie-card').forEach(card=>{
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dist = Math.hypot(cx - e.clientX, cy - e.clientY);
+    const maxDist = 300;
+    const intensity = Math.max(0.5, 1.5 - dist/maxDist);
+    card.style.setProperty('--glow-intensity', intensity);
+  });
+});
+</script>
+</body>
+</html>
