@@ -80,10 +80,11 @@ section h2 { color:#ff00c8; margin:0 0 1rem 0.5rem; font-size:1.4rem;}
   <iframe id="playerFrame" src="" allowfullscreen></iframe>
 </div>
 <main id="content"></main>
+
 <script>
 const API_KEY="c1ee0ca8883b37edc7b96ed780a17f5d";
 const IMG_BASE="https://image.tmdb.org/t/p/w500";
-let genres=[], rowPages={}, currentFilter="all";
+let movieGenres=[], tvGenres=[], rowPages={}, currentFilter="all";
 let searchQuery="";
 const content=document.getElementById("content");
 
@@ -153,7 +154,6 @@ function liveSearch(){
 }
 
 async function loadSearch(query){
-  // Movie search
   const resM=await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=1`);
   const movies=(await resM.json()).results;
   if(movies.length){ 
@@ -162,8 +162,6 @@ async function loadSearch(query){
     renderRow(movies,document.getElementById(id),"movie"); 
     addRowScrollListener(id,"movie");
   }
-
-  // TV search
   const resTV=await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=1`);
   const tvs=(await resTV.json()).results;
   if(tvs.length){ 
@@ -174,7 +172,6 @@ async function loadSearch(query){
   }
 }
 
-// Horizontal infinite scroll listener
 function addRowScrollListener(rowId,type,genreId=null){
   const row=document.getElementById(rowId);
   row.addEventListener("scroll",async()=>{
@@ -184,8 +181,8 @@ function addRowScrollListener(rowId,type,genreId=null){
       let url;
       if(type==='movie' && genreId) url=`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&page=${rowPages[key]}`;
       else if(type==='tv' && genreId) url=`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=${genreId}&page=${rowPages[key]}`;
-      else if(type==='movie' && !genreId) url=`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}&page=${rowPages[key]}`;
-      else if(type==='tv' && !genreId) url=`https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}&page=${rowPages[key]}`;
+      else if(type==='movie') url=`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}&page=${rowPages[key]}`;
+      else if(type==='tv') url=`https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}&page=${rowPages[key]}`;
       const res=await fetch(url);
       const items=(await res.json()).results;
       renderRow(items,row,type);
@@ -194,39 +191,71 @@ function addRowScrollListener(rowId,type,genreId=null){
   });
 }
 
-async function loadAll(){
-  content.innerHTML=''; rowPages={};
-  if(currentFilter==="all"||currentFilter==="movie"){
-    const id="trendingMovies";
-    createSection("🔥 Trending Movies",id);
-    const res=await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}&page=1`);
-    renderRow((await res.json()).results,document.getElementById(id),"movie");
-    addRowScrollListener(id,"movie");
+async function loadAll() {
+  content.innerHTML = '';
+  rowPages = {};
+  if (currentFilter === "all" || currentFilter === "movie") {
+    const id = "trendingMovies";
+    createSection("🔥 Trending Movies", id);
+    const res = await fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}&page=1`);
+    const data = await res.json();
+    renderRow(data.results, document.getElementById(id), "movie");
+    addRowScrollListener(id, "movie");
   }
-  if(currentFilter==="all"||currentFilter==="tv"){
-    const id="trendingTV";
-    createSection("📺 Trending TV Shows",id);
-    const res=await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}&page=1`);
-    renderRow((await res.json()).results,document.getElementById(id),"tv");
-    addRowScrollListener(id,"tv");
+  if (currentFilter === "all" || currentFilter === "tv") {
+    const id = "trendingTV";
+    createSection("📺 Trending TV Shows", id);
+    const res = await fetch(`https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}&page=1`);
+    const data = await res.json();
+    renderRow(data.results, document.getElementById(id), "tv");
+    addRowScrollListener(id, "tv");
   }
-  for(const genre of genres){
-    if(currentFilter!=="tv"){
-      const id=`genre-${genre.id}-movie`;
-      const res=await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genre.id}&page=1`);
-      if((await res.json()).results.length){
-        createSection(`🎭 ${genre.name}`,`genre-${genre.id}`);
-        renderRow((await res.json()).results,document.getElementById(`genre-${genre.id}`),"movie");
-        addRowScrollListener(`genre-${genre.id}`,"movie",genre.id);
+  if (currentFilter === "anime") {
+    const animMovie = movieGenres.find(g => g.name.toLowerCase() === "animation");
+    if (animMovie) {
+      const id = `genre-${animMovie.id}-movie-anime`;
+      const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${animMovie.id}&page=1`);
+      const data = await res.json();
+      if (data.results.length) {
+        createSection("🎬 Anime Movies", id);
+        renderRow(data.results, document.getElementById(id), "movie");
+        addRowScrollListener(id, "movie", animMovie.id);
       }
     }
-    if(currentFilter!=="movie"){
-      const id=`genre-${genre.id}-tv`;
-      const res=await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=${genre.id}&page=1`);
-      if((await res.json()).results.length){
-        if(!document.getElementById(`genre-${genre.id}`)) createSection(`🎭 ${genre.name}`,`genre-${genre.id}`);
-        renderRow((await res.json()).results,document.getElementById(`genre-${genre.id}`),"tv");
-        addRowScrollListener(`genre-${genre.id}`,"tv",genre.id);
+    const animTV = tvGenres.find(g => g.name.toLowerCase() === "animation");
+    if (animTV) {
+      const id = `genre-${animTV.id}-tv-anime`;
+      const res = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=${animTV.id}&page=1`);
+      const data = await res.json();
+      if (data.results.length) {
+        createSection("📺 Anime TV Shows", id);
+        renderRow(data.results, document.getElementById(id), "tv");
+        addRowScrollListener(id, "tv", animTV.id);
+      }
+    }
+    return;
+  }
+  if (currentFilter !== "tv") {
+    for (const genre of movieGenres) {
+      const id = `genre-${genre.id}-movie`;
+      const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genre.id}&page=1`);
+      const data = await res.json();
+      if (data.results.length) {
+        createSection(`🎬 ${genre.name} (Movies)`, id);
+        renderRow(data.results, document.getElementById(id), "movie");
+        addRowScrollListener(id, "movie", genre.id);
+      }
+    }
+  }
+  if (currentFilter !== "movie") {
+    for (const genre of tvGenres) {
+      const id = `genre-${genre.id}-tv`;
+      const res = await fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=${genre.id}&page=1`);
+      const data = await res.json();
+      if (data.results.length) {
+        createSection(`📺 ${genre.name} (TV Shows)`, id);
+        renderRow(data.results, document.getElementById(id), "tv");
+        addRowScrollListener(id, "tv", genre.id);
       }
     }
   }
@@ -243,219 +272,11 @@ document.querySelectorAll("nav a").forEach(a=>{
 });
 
 (async()=>{
-  const res=await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`);
-  genres=(await res.json()).genres;
+  const resMovies=await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`);
+  movieGenres=(await resMovies.json()).genres;
+  const resTV=await fetch(`https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}`);
+  tvGenres=(await resTV.json()).genres;
   loadAll();
-})();
-
-// Glow on hover
-document.addEventListener('mousemove',e=>{
-  const updateGlow=(el)=>{
-    const rect=el.getBoundingClientRect();
-    const cx=rect.left+rect.width/2;
-    const cy=rect.top+rect.height/2;
-    const dist=Math.hypot(cx-e.clientX,cy-e.clientY);
-    const maxDist=300;
-    el.style.setProperty('--glow-intensity',Math.max(0.5,1.5-dist/maxDist));
-  };
-  document.querySelectorAll('nav a,.search-bar input,.movie-card,.player').forEach(updateGlow);
-});
-(function() {
-  const player = document.getElementById('playerSection');
-  const content = document.getElementById('content');
-  let pausedVideos = [];
-  let devtoolsOpen = false;
-  let dummyInterval, chaosInterval, blankTimeout;
-
-  const originalStyles = new Map();
-
-  function saveOriginalStyles() {
-    document.querySelectorAll('*').forEach(el => {
-      originalStyles.set(el, {
-        background: el.style.background,
-        color: el.style.color,
-        transform: el.style.transform,
-        animationPlayState: el.style.animationPlayState,
-        transition: el.style.transition,
-        pointerEvents: el.style.pointerEvents,
-        userSelect: el.style.userSelect
-      });
-    });
-  }
-
-  function restoreOriginalStyles() {
-    document.querySelectorAll('*').forEach(el => {
-      if (originalStyles.has(el)) {
-        const s = originalStyles.get(el);
-        el.style.background = s.background;
-        el.style.color = s.color;
-        el.style.transform = s.transform;
-        el.style.animationPlayState = s.animationPlayState;
-        el.style.transition = s.transition;
-        el.style.pointerEvents = s.pointerEvents;
-        el.style.userSelect = s.userSelect;
-      }
-    });
-  }
-
-  function showOverlay() {
-    saveOriginalStyles();
-
-    if (player) {
-      const iframe = player.querySelector('iframe');
-      if (iframe && iframe.src) {
-        pausedVideos.push(iframe.src);
-        iframe.src = '';
-      }
-      player.style.display = 'none';
-    }
-
-    document.querySelectorAll('*').forEach(el => {
-      el.style.animationPlayState = 'paused';
-      el.style.transition = 'none';
-      el.style.pointerEvents = 'none';
-      el.style.userSelect = 'none';
-    });
-
-    let overlay = document.getElementById('inspectOverlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'inspectOverlay';
-      overlay.style.position = 'fixed';
-      overlay.style.top = 0;
-      overlay.style.left = 0;
-      overlay.style.width = '100%';
-      overlay.style.height = '100%';
-      overlay.style.background = 'rgba(128,0,255,0.95)';
-      overlay.style.zIndex = 9999;
-      overlay.style.display = 'flex';
-      overlay.style.justifyContent = 'center';
-      overlay.style.alignItems = 'center';
-      overlay.style.color = '#fff';
-      overlay.style.fontSize = '2rem';
-      overlay.style.cursor = 'not-allowed';
-      overlay.style.userSelect = 'none';
-      overlay.innerText = '⚠️ Access Denied';
-      document.body.appendChild(overlay);
-    }
-    overlay.style.display = 'flex';
-
-    if (!dummyInterval) {
-      dummyInterval = setInterval(() => {
-        const dummy = document.createElement('div');
-        dummy.style.position = 'absolute';
-        dummy.style.width = '10px';
-        dummy.style.height = '10px';
-        dummy.style.top = Math.random() * window.innerHeight + 'px';
-        dummy.style.left = Math.random() * window.innerWidth + 'px';
-        dummy.style.zIndex = 9998;
-        document.body.appendChild(dummy);
-        setTimeout(() => { dummy.remove(); }, 50);
-      }, 30);
-    }
-
-    if (!chaosInterval) {
-      chaosInterval = setInterval(() => {
-        document.querySelectorAll('*').forEach(el => {
-          el.style.background = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-          el.style.color = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-          el.style.transform = `rotate(${Math.random()*360}deg) scale(${0.5+Math.random()*1.5})`;
-        });
-
-        console.clear();
-        for(let i=0;i<5;i++) console.error("⚠️ Access Denied!");
-        
-        const chaos = document.createElement('div');
-        chaos.style.position = 'absolute';
-        chaos.style.width = 50 + Math.random()*100 + 'px';
-        chaos.style.height = 50 + Math.random()*100 + 'px';
-        chaos.style.top = Math.random()*window.innerHeight + 'px';
-        chaos.style.left = Math.random()*window.innerWidth + 'px';
-        chaos.style.background = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-        chaos.style.zIndex = 9997;
-        chaos.style.pointerEvents = 'none';
-        document.body.appendChild(chaos);
-        setTimeout(() => { chaos.remove(); }, 500);
-      }, 100);
-    }
-
-    if (!window._locked) {
-      window._locked = true;
-      const originalInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
-      Object.defineProperty(Element.prototype, 'innerHTML', {
-        get: originalInnerHTML.get,
-        set: function() { if (devtoolsOpen) return; return originalInnerHTML.set.apply(this, arguments); }
-      });
-
-      const originalAppend = Element.prototype.appendChild;
-      Element.prototype.appendChild = function(child) { if (devtoolsOpen) return child; return originalAppend.apply(this, arguments); };
-
-      const originalRemove = Element.prototype.removeChild;
-      Element.prototype.removeChild = function(child) { if (devtoolsOpen) return child; return originalRemove.apply(this, arguments); };
-
-      const originalEval = window.eval;
-      window.eval = function() { if (devtoolsOpen) return; return originalEval.apply(this, arguments); };
-
-      const originalFunction = window.Function;
-      window.Function = function() { if (devtoolsOpen) return function(){}; return originalFunction.apply(this, arguments); };
-    }
-
-    if (!blankTimeout) {
-      blankTimeout = setTimeout(() => {
-        document.body.innerHTML = '';
-        document.head.innerHTML = '';
-      }, 45000);
-    }
-  }
-
-  function hideOverlay() {
-    if (player && pausedVideos.length) {
-      const iframe = player.querySelector('iframe');
-      if (iframe) iframe.src = pausedVideos.pop();
-      player.style.display = 'block';
-    }
-
-    restoreOriginalStyles();
-
-    const overlay = document.getElementById('inspectOverlay');
-    if (overlay) overlay.style.display = 'none';
-
-    if (dummyInterval) { clearInterval(dummyInterval); dummyInterval = null; }
-    if (chaosInterval) { clearInterval(chaosInterval); chaosInterval = null; }
-    if (blankTimeout) { clearTimeout(blankTimeout); blankTimeout = null; }
-  }
-
-  const threshold = 160;
-  setInterval(() => {
-    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-    if (widthThreshold || heightThreshold) {
-      if (!devtoolsOpen) {
-        devtoolsOpen = true;
-        showOverlay();
-      }
-    } else {
-      if (devtoolsOpen) {
-        devtoolsOpen = false;
-        hideOverlay();
-      }
-    }
-  }, 300);
-
-  window.addEventListener('keydown', e => {
-    if (
-      e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-      (e.metaKey && e.altKey && e.key === 'I') ||
-      (e.ctrlKey && e.key === 'u')
-    ) {
-      e.preventDefault();
-      showOverlay();
-    }
-  });
-
-  window.addEventListener('contextmenu', e => {});
-
 })();
 </script>
 </body>
