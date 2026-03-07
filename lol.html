@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYPERCUBE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+body{font-family:'Rajdhani',sans-serif;color:#00ffe5;}
+
+/* Scanline overlay */
+body::before{
+  content:'';position:fixed;inset:0;z-index:300;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);
+}
+/* Vignette */
+body::after{
+  content:'';position:fixed;inset:0;z-index:299;pointer-events:none;
+  background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.85) 100%);
+}
+
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;}
+#c{z-index:1;}
+#fx{z-index:2;pointer-events:none;}
+
+/* ── HUD ── */
+#hud{position:fixed;inset:0;z-index:400;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:1.8rem 2.2rem;}
+#top{display:flex;justify-content:space-between;align-items:flex-start;}
+#bot{display:flex;justify-content:space-between;align-items:flex-end;}
+
+.logo{
+  font-family:'Syncopate',sans-serif;font-weight:700;
+  font-size:clamp(1rem,2.2vw,1.6rem);letter-spacing:0.35em;
+  text-transform:uppercase;
+  background:linear-gradient(90deg,#00ffe5,#7b2fff,#ff2d6b);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 12px rgba(0,255,229,0.6));
+}
+#song{font-size:0.58rem;letter-spacing:0.2em;color:rgba(0,255,229,0.3);margin-top:0.3rem;max-width:220px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+
+.meters{display:flex;flex-direction:column;gap:0.35rem;align-items:flex-end;}
+.meter-row{display:flex;align-items:center;gap:8px;font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.3);}
+.meter-row span{min-width:28px;text-align:right;font-variant-numeric:tabular-nums;}
+.mbar{height:3px;border-radius:2px;transition:width 0.04s linear;min-width:2px;}
+.mb-bass{background:linear-gradient(90deg,#ff2d6b,#ff6b00);box-shadow:0 0 8px #ff2d6b;}
+.mb-mid{background:linear-gradient(90deg,#00ffe5,#7b2fff);box-shadow:0 0 8px #00ffe5;}
+.mb-high{background:linear-gradient(90deg,#7b2fff,#ff2d6b);box-shadow:0 0 8px #7b2fff;}
+.beat-dot{width:8px;height:8px;border-radius:50%;background:#ff2d6b;display:inline-block;box-shadow:0 0 6px #ff2d6b;opacity:0.3;transition:opacity 0.05s,box-shadow 0.05s;}
+.beat-dot.on{opacity:1;box-shadow:0 0 20px #ff2d6b,0 0 40px rgba(255,45,107,0.5);animation:bpulse 0.25s ease-out;}
+@keyframes bpulse{0%{transform:scale(1.8)}100%{transform:scale(1)}}
+
+#controls{display:flex;gap:0.5rem;flex-wrap:wrap;pointer-events:all;}
+.btn{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.6rem;
+  letter-spacing:0.2em;text-transform:uppercase;
+  padding:0.38rem 0.9rem;cursor:pointer;border:1px solid rgba(0,255,229,0.25);
+  background:rgba(0,0,0,0.5);color:rgba(0,255,229,0.6);
+  transition:all 0.12s;backdrop-filter:blur(8px);
+}
+.btn:hover{border-color:#00ffe5;color:#00ffe5;background:rgba(0,255,229,0.08);box-shadow:0 0 16px rgba(0,255,229,0.3),inset 0 0 12px rgba(0,255,229,0.05);}
+.btn.hot{border-color:rgba(255,45,107,0.35);color:rgba(255,45,107,0.7);}
+.btn.hot:hover{border-color:#ff2d6b;color:#ff2d6b;background:rgba(255,45,107,0.08);box-shadow:0 0 16px rgba(255,45,107,0.3);}
+.btn.active{background:rgba(0,255,229,0.15);color:#00ffe5;border-color:#00ffe5;box-shadow:0 0 20px rgba(0,255,229,0.4);}
+label.btn{display:inline-block;}
+#fi{display:none;}
+
+.hint{font-size:0.5rem;letter-spacing:0.1em;color:rgba(0,255,229,0.15);text-align:right;line-height:1.9;}
+
+/* Corners */
+.cr{position:fixed;width:20px;height:20px;border-color:rgba(0,255,229,0.2);border-style:solid;z-index:350;}
+.cr.tl{top:.9rem;left:.9rem;border-width:1px 0 0 1px;}
+.cr.tr{top:.9rem;right:.9rem;border-width:1px 1px 0 0;}
+.cr.bl{bottom:.9rem;left:.9rem;border-width:0 0 1px 1px;}
+.cr.br{bottom:.9rem;right:.9rem;border-width:0 1px 1px 0;}
+
+/* Idle */
+#idle{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;z-index:350;pointer-events:none;
+  font-family:'Syncopate',sans-serif;font-size:0.6rem;letter-spacing:0.3em;
+  color:rgba(0,255,229,0.2);line-height:4;text-transform:uppercase;
+  transition:opacity 1.5s;
+}
+#idle.gone{opacity:0;}
+</style>
+</head>
+<body>
+<div class="cr tl"></div><div class="cr tr"></div><div class="cr bl"></div><div class="cr br"></div>
+
+<canvas id="c"></canvas>
+<canvas id="fx"></canvas>
+
+<div id="hud">
+  <div id="top">
+    <div>
+      <div class="logo">Hyper<span>cube</span></div>
+      <div id="song">NO SOURCE — LOAD AUDIO OR USE MIC</div>
+    </div>
+    <div class="meters">
+      <div class="meter-row">BASS <span id="vb">000</span><div class="mbar mb-bass" id="mb" style="width:0"></div></div>
+      <div class="meter-row">MID&nbsp; <span id="vm">000</span><div class="mbar mb-mid"  id="mm" style="width:0"></div></div>
+      <div class="meter-row">HIGH <span id="vh">000</span><div class="mbar mb-high" id="mh" style="width:0"></div></div>
+      <div class="meter-row">BPM&nbsp; <span id="vbpm">---</span><div class="beat-dot" id="bd"></div></div>
+    </div>
+  </div>
+  <div id="bot">
+    <div id="controls">
+      <label class="btn hot" for="fi">▶ LOAD FILE</label>
+      <input type="file" id="fi" accept="audio/*">
+      <button class="btn hot" id="micbtn">🎤 MIC</button>
+      <button class="btn" id="scenebtn">SCENE: HYPERCUBE</button>
+      <button class="btn" id="palbtn">PALETTE: NEON</button>
+      <button class="btn active" id="fxbtn">FX: ON</button>
+    </div>
+    <div class="hint">DRAG ROTATE · SCROLL ZOOM<br>DROP FILE ANYWHERE</div>
+  </div>
+</div>
+
+<div id="idle">Drop audio here<br>or use microphone<br>to begin</div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════
+//   HYPERCUBE — ULTIMATE AUDIO VISUALIZER
+//   WebGL + Canvas2D hybrid, bass-reactive spin
+// ═══════════════════════════════════════════════════
+
+const C2 = document.getElementById('fx').getContext('2d'); // FX overlay (bloom/chroma)
+const glCanvas = document.getElementById('c');
+const gl = glCanvas.getContext('webgl', {antialias:true, alpha:false, powerPreference:'high-performance'});
+
+if (!gl) { document.body.innerHTML = '<p style="color:#f00;padding:2rem">WebGL not supported</p>'; }
+
+// ── RESIZE ──────────────────────────────────────────
+function resize() {
+  glCanvas.width = document.getElementById('fx').width = window.innerWidth;
+  glCanvas.height = document.getElementById('fx').height = window.innerHeight;
+  gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+}
+resize(); window.addEventListener('resize', resize);
+
+// ── AUDIO ───────────────────────────────────────────
+let actx, analyser, fdata, tdata, fftSize = 2048, binCount;
+let hasAudio = false;
+
+function initAudio() {
+  actx = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = actx.createAnalyser();
+  analyser.fftSize = fftSize;
+  analyser.smoothingTimeConstant = 0.8;
+  binCount = analyser.frequencyBinCount;
+  fdata = new Uint8Array(binCount);
+  tdata = new Uint8Array(binCount);
+}
+
+async function startMic() {
+  initAudio();
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true}).catch(e => { alert(e); return null; });
+  if (!stream) return;
+  actx.createMediaStreamSource(stream).connect(analyser);
+  go('MICROPHONE INPUT');
+  document.getElementById('micbtn').classList.add('active');
+}
+
+function startFile(buf, name) {
+  initAudio();
+  actx.decodeAudioData(buf, decoded => {
+    const src = actx.createBufferSource();
+    src.buffer = decoded; src.loop = true;
+    src.connect(analyser); analyser.connect(actx.destination);
+    src.start(0);
+    go(name.replace(/\.[^.]+$/, '').toUpperCase().slice(0, 32));
+    document.getElementById('micbtn').classList.remove('active');
+  });
+}
+
+function go(name) {
+  hasAudio = true;
+  document.getElementById('song').textContent = name;
+  document.getElementById('idle').classList.add('gone');
+}
+
+document.getElementById('fi').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader(); r.onload = ev => startFile(ev.target.result, f.name); r.readAsArrayBuffer(f);
+};
+document.getElementById('micbtn').onclick = startMic;
+document.body.ondragover = e => e.preventDefault();
+document.body.ondrop = e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  const r = new FileReader(); r.onload = ev => startFile(ev.target.result, f.name); r.readAsArrayBuffer(f);
+};
+
+// ── PALETTES ────────────────────────────────────────
+const PALS = [
+  { name:'NEON',    a:[0,255,229],   b:[255,45,107],  c:[123,47,255],  d:[0,180,255]  },
+  { name:'INFERNO', a:[255,100,0],   b:[255,220,0],   c:[255,20,60],   d:[255,160,0]  },
+  { name:'ARCTIC',  a:[80,180,255],  b:[0,255,200],   c:[160,100,255], d:[0,120,255]  },
+  { name:'TOXIC',   a:[0,255,80],    b:[200,0,255],   c:[0,220,120],   d:[120,255,0]  },
+  { name:'SOLAR',   a:[255,220,0],   b:[255,80,0],    c:[255,160,80],  d:[200,255,0]  },
+];
+let palIdx = 0;
+
+const SCENES = ['HYPERCUBE','VORTEX','PRISM','STORM','TUNNEL'];
+let sceneIdx = 0;
+let fxOn = true;
+
+document.getElementById('palbtn').onclick = () => {
+  palIdx = (palIdx+1) % PALS.length;
+  document.getElementById('palbtn').textContent = 'PALETTE: ' + PALS[palIdx].name;
+};
+document.getElementById('scenebtn').onclick = () => {
+  sceneIdx = (sceneIdx+1) % SCENES.length;
+  document.getElementById('scenebtn').textContent = 'SCENE: ' + SCENES[sceneIdx];
+};
+document.getElementById('fxbtn').onclick = () => {
+  fxOn = !fxOn;
+  document.getElementById('fxbtn').textContent = 'FX: ' + (fxOn?'ON':'OFF');
+  document.getElementById('fxbtn').classList.toggle('active', fxOn);
+};
+
+// ── CAMERA STATE ────────────────────────────────────
+let rotX = 0.4, rotY = 0.5;
+let velX = 0.003, velY = 0.008;   // angular velocity — KEY for bass kick
+let zoom = 1.0;
+let dragging = false, lmx = 0, lmy = 0;
+
+glCanvas.addEventListener('mousedown', e => { dragging=true; lmx=e.clientX; lmy=e.clientY; });
+window.addEventListener('mouseup', () => dragging=false);
+window.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  velY += (e.clientX-lmx) * 0.002; velX += (e.clientY-lmy) * 0.002;
+  lmx=e.clientX; lmy=e.clientY;
+});
+window.addEventListener('wheel', e => zoom = Math.max(0.3, Math.min(3, zoom - e.deltaY*0.001)), {passive:true});
+glCanvas.addEventListener('touchstart', e => { dragging=true; lmx=e.touches[0].clientX; lmy=e.touches[0].clientY; }, {passive:true});
+window.addEventListener('touchend', () => dragging=false);
+window.addEventListener('touchmove', e => {
+  velY += (e.touches[0].clientX-lmx)*0.002; velX += (e.touches[0].clientY-lmy)*0.002;
+  lmx=e.touches[0].clientX; lmy=e.touches[0].clientY;
+}, {passive:true});
+
+// ── WEBGL SHADER SETUP ──────────────────────────────
+function mkShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+function mkProg(vs, fs) {
+  const p = gl.createProgram();
+  gl.attachShader(p, mkShader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, mkShader(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  return p;
+}
+
+// Main line shader
+const lineProg = mkProg(`
+  precision mediump float;
+  attribute vec3 aPos;
+  attribute vec4 aCol;
+  uniform mat4 uMVP;
+  varying vec4 vCol;
+  void main() {
+    vCol = aCol;
+    gl_Position = uMVP * vec4(aPos, 1.0);
+    gl_PointSize = 5.0;
+  }
+`, `
+  precision mediump float;
+  varying vec4 vCol;
+  void main() { gl_FragColor = vCol; }
+`);
+
+// Point / particle shader
+const ptProg = mkProg(`
+  precision mediump float;
+  attribute vec3 aPos;
+  attribute vec4 aCol;
+  attribute float aSize;
+  uniform mat4 uMVP;
+  varying vec4 vCol;
+  void main() {
+    vCol = aCol;
+    gl_Position = uMVP * vec4(aPos, 1.0);
+    gl_PointSize = aSize;
+  }
+`, `
+  precision mediump float;
+  varying vec4 vCol;
+  void main() {
+    vec2 c = gl_PointCoord - 0.5;
+    float d = dot(c,c);
+    if (d > 0.25) discard;
+    float a = 1.0 - smoothstep(0.1, 0.25, d);
+    gl_FragColor = vec4(vCol.rgb, vCol.a * a);
+  }
+`);
+
+// ── BUFFERS ─────────────────────────────────────────
+const lineBuf = gl.createBuffer();
+const lineColBuf = gl.createBuffer();
+const ptBuf = gl.createBuffer();
+const ptColBuf = gl.createBuffer();
+const ptSizeBuf = gl.createBuffer();
+
+gl.enable(gl.BLEND);
+gl.blendFunc(gl.SRC_ALPHA, gl.ONE);  // Additive blending = glow for free
+
+// ── MATRIX MATH ─────────────────────────────────────
+const M4 = {
+  mul(a, b) {
+    const r = new Float32Array(16);
+    for (let i=0;i<4;i++) for (let j=0;j<4;j++)
+      r[i*4+j] = a[i*4]*b[j]+a[i*4+1]*b[j+4]+a[i*4+2]*b[j+8]+a[i*4+3]*b[j+12];
+    return r;
+  },
+  persp(fov, asp, near, far) {
+    const f=1/Math.tan(fov/2), r=new Float32Array(16);
+    r[0]=f/asp; r[5]=f; r[10]=(far+near)/(near-far); r[11]=-1; r[14]=2*far*near/(near-far);
+    return r;
+  },
+  rotX(a) {
+    const c=Math.cos(a),s=Math.sin(a),r=new Float32Array(16);
+    r[0]=1;r[5]=c;r[6]=-s;r[9]=s;r[10]=c;r[15]=1; return r;
+  },
+  rotY(a) {
+    const c=Math.cos(a),s=Math.sin(a),r=new Float32Array(16);
+    r[0]=c;r[2]=s;r[5]=1;r[8]=-s;r[10]=c;r[15]=1; return r;
+  },
+  rotZ(a) {
+    const c=Math.cos(a),s=Math.sin(a),r=new Float32Array(16);
+    r[0]=c;r[1]=-s;r[4]=s;r[5]=c;r[10]=1;r[15]=1; return r;
+  },
+  trans(x,y,z) {
+    const r=new Float32Array(16); r[0]=r[5]=r[10]=r[15]=1; r[12]=x;r[13]=y;r[14]=z; return r;
+  },
+  scale(x,y,z) {
+    const r=new Float32Array(16); r[0]=x;r[5]=y;r[10]=z;r[15]=1; return r;
+  }
+};
+
+function buildMVP(rx, ry, rz=0, tx=0, ty=0, tz=-3.5, sc=1) {
+  const W=glCanvas.width, H=glCanvas.height;
+  const p = M4.persp(Math.PI/3.5, W/H, 0.1, 100);
+  const v = M4.trans(tx, ty, tz * (1/zoom));
+  const mx = M4.rotX(rx), my = M4.rotY(ry), mz = M4.rotZ(rz);
+  const s = M4.scale(sc,sc,sc);
+  return M4.mul(p, M4.mul(v, M4.mul(mz, M4.mul(my, M4.mul(mx, s)))));
+}
+
+// ── GEOMETRY ────────────────────────────────────────
+const CUBE_V = (s=1) => {
+  const h=s/2;
+  return new Float32Array([
+    -h,-h,-h, h,-h,-h, h,h,-h,-h,h,-h,
+    -h,-h, h, h,-h, h, h,h, h,-h,h, h
+  ]);
+};
+// Edges as index pairs
+const EIDX = [0,1,1,2,2,3,3,0, 4,5,5,6,6,7,7,4, 0,4,1,5,2,6,3,7];
+
+function buildCubeLines(scale, freqOffset, palette, alpha=1, twistAmt=0) {
+  const verts = [], cols = [];
+  const cv = [];
+  for (let i=0;i<8;i++) {
+    const bv = CUBE_V(scale);
+    cv.push([bv[i*3], bv[i*3+1], bv[i*3+2]]);
+  }
+  // Apply twist — rotate each vertex slightly based on Y position
+  const twisted = cv.map(([x,y,z]) => {
+    const angle = y * twistAmt;
+    const xr = x*Math.cos(angle) - z*Math.sin(angle);
+    const zr = x*Math.sin(angle) + z*Math.cos(angle);
+    return [xr, y, zr];
+  });
+
+  for (let e=0; e<EIDX.length; e+=2) {
+    const a=EIDX[e], b=EIDX[e+1];
+    const [ax,ay,az] = twisted[a];
+    const [bx,by,bz] = twisted[b];
+    verts.push(ax,ay,az, bx,by,bz);
+
+    const t = e / EIDX.length;
+    const si = Math.floor((t + freqOffset) * (binCount||512) * 0.8) % (binCount||512);
+    const fv = fdata ? fdata[si]/255 : 0.3;
+    const ca = lerp3(palette.a, palette.b, t);
+    const bright = 0.6 + fv * 1.4;
+    cols.push(
+      ca[0]/255*bright, ca[1]/255*bright, ca[2]/255*bright, alpha*0.8+fv*0.2,
+      ca[0]/255*bright, ca[1]/255*bright, ca[2]/255*bright, alpha*0.8+fv*0.2
+    );
+  }
+  return { verts: new Float32Array(verts), cols: new Float32Array(cols) };
+}
+
+function lerp3(a,b,t){ return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+// ── DRAW LINES (WebGL) ───────────────────────────────
+function drawLines(verts, cols, mvp, lineWidth=1) {
+  gl.useProgram(lineProg);
+  const uMVP = gl.getUniformLocation(lineProg, 'uMVP');
+  const aPos = gl.getAttribLocation(lineProg, 'aPos');
+  const aCol = gl.getAttribLocation(lineProg, 'aCol');
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, lineBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, lineColBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, cols, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(aCol);
+  gl.vertexAttribPointer(aCol, 4, gl.FLOAT, false, 0, 0);
+
+  gl.uniformMatrix4fv(uMVP, false, mvp);
+  gl.lineWidth(lineWidth);
+  gl.drawArrays(gl.LINES, 0, verts.length/3);
+}
+
+// ── DRAW POINTS (WebGL) ──────────────────────────────
+function drawPoints(verts, cols, sizes, mvp) {
+  gl.useProgram(ptProg);
+  const uMVP = gl.getUniformLocation(ptProg, 'uMVP');
+  const aPos = gl.getAttribLocation(ptProg, 'aPos');
+  const aCol = gl.getAttribLocation(ptProg, 'aCol');
+  const aSz  = gl.getAttribLocation(ptProg, 'aSize');
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, ptBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, ptColBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, cols, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(aCol);
+  gl.vertexAttribPointer(aCol, 4, gl.FLOAT, false, 0, 0);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, ptSizeBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, sizes, gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(aSz);
+  gl.vertexAttribPointer(aSz, 1, gl.FLOAT, false, 0, 0);
+
+  gl.uniformMatrix4fv(uMVP, false, mvp);
+  gl.drawArrays(gl.POINTS, verts.length/3 > 0 ? 0 : 0, verts.length/3);
+}
+
+// ── SPECTRUM RING (3D arc of freq bars) ──────────────
+function buildSpectrumRing(N, radius, pal, heightScale, ts, ringOffset=0) {
+  const verts=[], cols=[];
+  for (let i=0;i<N;i++) {
+    const t=i/N;
+    const angle = t*Math.PI*2 + ringOffset;
+    const si = Math.floor(t * binCount * 0.8);
+    const val = fdata ? fdata[si]/255 : 0;
+    const r0 = radius, r1 = radius + val * heightScale;
+    const x0=Math.cos(angle)*r0, z0=Math.sin(angle)*r0;
+    const x1=Math.cos(angle)*r1, z1=Math.sin(angle)*r1;
+    verts.push(x0, 0, z0, x1, 0, z1);
+    const c = lerp3(pal.a, pal.b, t);
+    const bright = 0.5 + val*1.5;
+    const ca = [c[0]/255*bright, c[1]/255*bright, c[2]/255*bright];
+    cols.push(...ca, 0.3+val*0.7, ...ca, 0.6+val*0.4);
+  }
+  return { verts: new Float32Array(verts), cols: new Float32Array(cols) };
+}
+
+// ── PARTICLE SYSTEM (GPU) ───────────────────────────
+const NPARTICLES = 600;
+const ppos = new Float32Array(NPARTICLES*3);
+const pvel = new Float32Array(NPARTICLES*3);
+const pcol = new Float32Array(NPARTICLES*4);
+const psz  = new Float32Array(NPARTICLES);
+const plife= new Float32Array(NPARTICLES);
+let pHead = 0;
+
+function spawnBurst(n, bass, pal) {
+  for (let i=0;i<n;i++) {
+    const idx = pHead % NPARTICLES; pHead++;
+    const angle = Math.random()*Math.PI*2;
+    const pitch = (Math.random()-0.5)*Math.PI;
+    const spd = (0.01 + Math.random()*0.06) * (0.5+bass);
+    ppos[idx*3]   = (Math.random()-0.5)*0.5;
+    ppos[idx*3+1] = (Math.random()-0.5)*0.5;
+    ppos[idx*3+2] = (Math.random()-0.5)*0.5;
+    pvel[idx*3]   = Math.cos(angle)*Math.cos(pitch)*spd;
+    pvel[idx*3+1] = Math.sin(pitch)*spd*2;
+    pvel[idx*3+2] = Math.sin(angle)*Math.cos(pitch)*spd;
+    const c = Math.random()<0.5 ? pal.a : pal.b;
+    pcol[idx*4]   = c[0]/255; pcol[idx*4+1]=c[1]/255; pcol[idx*4+2]=c[2]/255; pcol[idx*4+3]=1;
+    psz[idx] = 3+Math.random()*8*bass;
+    plife[idx] = 0.4+Math.random()*0.8;
+  }
+}
+
+function updateParticles(dt) {
+  for (let i=0;i<NPARTICLES;i++) {
+    if (plife[i]<=0) continue;
+    plife[i] -= dt;
+    ppos[i*3]   += pvel[i*3];
+    ppos[i*3+1] += pvel[i*3+1];
+    ppos[i*3+2] += pvel[i*3+2];
+    pvel[i*3+1] -= 0.001; // gravity
+    const lt = Math.max(0, plife[i]);
+    pcol[i*4+3] = lt * 0.9;
+    psz[i] *= 0.98;
+  }
+}
+
+// ── FX CANVAS (chromatic aberration + bloom) ────────
+function applyFX(bass, avg) {
+  const fx = document.getElementById('fx');
+  const W=fx.width, H=fx.height;
+  C2.clearRect(0,0,W,H);
+  if (!fxOn) return;
+
+  // Bloom: draw the WebGL canvas blurred onto FX canvas
+  const blur = 8 + bass*20;
+  C2.filter = `blur(${blur}px)`;
+  C2.globalAlpha = 0.35 + avg*0.15;
+  C2.globalCompositeOperation = 'lighter';
+  C2.drawImage(glCanvas, 0, 0);
+
+  // Second bloom pass - tighter
+  C2.filter = `blur(${blur*0.4}px)`;
+  C2.globalAlpha = 0.2;
+  C2.drawImage(glCanvas, 0, 0);
+
+  // Chromatic aberration on strong bass hits
+  if (bass > 0.45) {
+    const shift = bass * 6;
+    C2.filter = 'none';
+    C2.globalAlpha = bass * 0.12;
+    C2.globalCompositeOperation = 'screen';
+    // Red channel shift right
+    C2.filter = `blur(1px) hue-rotate(0deg)`;
+    C2.drawImage(glCanvas, shift, 0);
+    // Blue channel shift left  
+    C2.filter = `blur(1px) hue-rotate(180deg)`;
+    C2.drawImage(glCanvas, -shift, 0);
+  }
+
+  C2.filter = 'none';
+  C2.globalAlpha = 1;
+  C2.globalCompositeOperation = 'source-over';
+}
+
+// ── BPM DETECTION ───────────────────────────────────
+let bpmArr=[], lastBeat=0, bpm=0, beatFlash=0;
+function detectBeat(bass, ts) {
+  if (bass > 0.58 && ts-lastBeat > 280) {
+    if (lastBeat>0) {
+      bpmArr.push(60000/(ts-lastBeat));
+      if (bpmArr.length>10) bpmArr.shift();
+      bpm = Math.round(bpmArr.reduce((a,b)=>a+b)/bpmArr.length);
+    }
+    lastBeat = ts; beatFlash = 1;
+    const bd = document.getElementById('bd');
+    bd.classList.remove('on'); void bd.offsetWidth; bd.classList.add('on');
+    return true;
+  }
+  return false;
+}
+
+// ── SCENE FUNCTIONS ─────────────────────────────────
+
+function sceneHypercube(mvp, pal, bass, mid, high, avg, ts) {
+  // Outer cube with twist
+  const twist = avg * 0.8;
+  const outerScale = 1.2 + bass*0.5;
+  const outer = buildCubeLines(outerScale, 0, pal, 1, twist);
+  drawLines(outer.verts, outer.cols, mvp, 2);
+
+  // Inner cube counter-rotated
+  const iRot = rotX*-1.4 + ts*0.0004;
+  const iMVP = buildMVP(iRot, rotY*0.6 - ts*0.0002, ts*0.0001, 0, 0, -3.5, 0.45+mid*0.15);
+  const inner = buildCubeLines(1.0, 0.3, {a:pal.c, b:pal.d}, 0.85);
+  drawLines(inner.verts, inner.cols, iMVP, 1.5);
+
+  // Connecting wires between outer and inner verts
+  const ov = CUBE_V(outerScale);
+  const iv_raw = CUBE_V(0.45+mid*0.15);
+  // Build wire lines in world space (use MVP)
+  const wireVerts = [], wireCols = [];
+  for (let i=0;i<8;i++) {
+    wireVerts.push(ov[i*3], ov[i*3+1], ov[i*3+2]);
+    wireVerts.push(iv_raw[i*3]*0.5, iv_raw[i*3+1]*0.5, iv_raw[i*3+2]*0.5);
+    const c = lerp3(pal.b, pal.c, i/8);
+    const a = 0.15 + avg*0.3;
+    wireVerts; wireCols.push(c[0]/255,c[1]/255,c[2]/255,a, c[0]/255,c[1]/255,c[2]/255,a);
+  }
+  drawLines(new Float32Array(wireVerts), new Float32Array(wireCols), mvp, 1);
+
+  // Spectrum ring 1 — equator
+  const ring1 = buildSpectrumRing(96, 1.6+bass*0.3, pal, 0.7+bass*0.5, ts);
+  drawLines(ring1.verts, ring1.cols, buildMVP(rotX, rotY, 0, 0, 0, -3.5), 1.5);
+
+  // Spectrum ring 2 — rotated 90°
+  const ring2 = buildSpectrumRing(64, 1.4+mid*0.2, {a:pal.c,b:pal.d}, 0.5+mid*0.4, ts, Math.PI/2);
+  drawLines(ring2.verts, ring2.cols, buildMVP(rotX+Math.PI/2, rotY, 0, 0, 0, -3.5), 1);
+
+  // Vertex sparkles
+  const vv=[], vc=[], vs=[];
+  for (let i=0;i<8;i++) {
+    vv.push(ov[i*3], ov[i*3+1], ov[i*3+2]);
+    const c = i<4?pal.b:pal.a; const bright=0.8+bass*1.2;
+    vc.push(c[0]/255*bright, c[1]/255*bright, c[2]/255*bright, 0.9);
+    vs.push(4+bass*14);
+  }
+  drawPoints(new Float32Array(vv), new Float32Array(vc), new Float32Array(vs), mvp);
+}
+
+function sceneVortex(mvp, pal, bass, mid, high, avg, ts) {
+  // Spinning rings that warp with audio
+  const NR = 8;
+  for (let ri=0; ri<NR; ri++) {
+    const t = ri/NR;
+    const z = (t-0.5)*3.5;
+    const baseR = 0.4+t*1.2;
+    const si = Math.floor(t*binCount*0.8);
+    const val = fdata ? fdata[si]/255 : 0.2;
+    const spinAngle = ts*0.001*(1+ri*0.2) + val*0.5;
+    const N=64;
+    const verts=[], cols=[];
+    for (let i=0;i<=N;i++) {
+      const a=(i/N)*Math.PI*2;
+      const warp = 1+val*0.4*Math.sin(a*3+ts*0.002);
+      const r=(baseR+val*0.4)*warp;
+      verts.push(Math.cos(a)*r, Math.sin(a)*r, 0);
+    }
+    const c = lerp3(pal.a, pal.b, t);
+    const alpha=0.4+val*0.6;
+    for (let i=0;i<=N;i++) cols.push(c[0]/255,c[1]/255,c[2]/255,alpha);
+    const ringMVP = buildMVP(rotX+spinAngle*0.5, rotY+spinAngle, t*0.5, 0, 0, z-3.5);
+    // Draw as line strip
+    const vf = new Float32Array(verts), cf = new Float32Array(cols);
+    gl.useProgram(lineProg);
+    const uMVP = gl.getUniformLocation(lineProg,'uMVP');
+    const aPos = gl.getAttribLocation(lineProg,'aPos');
+    const aCol = gl.getAttribLocation(lineProg,'aCol');
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuf); gl.bufferData(gl.ARRAY_BUFFER, vf, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(aPos); gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineColBuf); gl.bufferData(gl.ARRAY_BUFFER, cf, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(aCol); gl.vertexAttribPointer(aCol,4,gl.FLOAT,false,0,0);
+    gl.uniformMatrix4fv(uMVP, false, ringMVP);
+    gl.lineWidth(1.5);
+    gl.drawArrays(gl.LINE_STRIP, 0, vf.length/3);
+  }
+  // Central cube
+  const cube = buildCubeLines(0.7+bass*0.4, 0, pal, 1);
+  drawLines(cube.verts, cube.cols, mvp, 2);
+}
+
+function scenePrism(mvp, pal, bass, mid, high, avg, ts) {
+  // Three cubes on different axes, rotating independently
+  for (let k=0;k<4;k++) {
+    const angle = ts*0.0003*(k*0.7+0.4)+k*Math.PI/2;
+    const kMVP = buildMVP(rotX+angle*(k%2?1:-1), rotY+angle, 0, 0, 0, -3.5, 0.3+k*0.18);
+    const cube = buildCubeLines(1, k/4, {a:PALS[(palIdx+k)%PALS.length].a, b:PALS[(palIdx+k)%PALS.length].b}, 0.5+avg*0.4);
+    drawLines(cube.verts, cube.cols, kMVP, 1.5);
+  }
+  // Freq rings
+  for (let r=0;r<5;r++) {
+    const ring = buildSpectrumRing(80, 0.6+r*0.4, pal, 0.4+mid*0.5, ts, r*Math.PI/5);
+    const rMVP = buildMVP(rotX+r*0.4, rotY+r*0.3, ts*0.0002, 0,0,-3.5);
+    drawLines(ring.verts, ring.cols, rMVP, 1);
+  }
+}
+
+function sceneStorm(mvp, pal, bass, mid, high, avg, ts) {
+  // Chaotic lightning spikes in 3D
+  const BOLTS=32;
+  const verts=[], cols=[];
+  for (let b=0;b<BOLTS;b++) {
+    const angle=(b/BOLTS)*Math.PI*2+ts*0.0002;
+    const pitch=(Math.sin(b*1.7+ts*0.0003)-0.5)*Math.PI*0.6;
+    const si=Math.floor((b/BOLTS)*binCount*0.85);
+    const val=fdata?fdata[si]/255:0.2;
+    const len=0.3+val*2.0;
+    const SEGS=6;
+    let px=0,py=0,pz=0;
+    for (let s=0;s<SEGS;s++) {
+      const st=s/SEGS;
+      const jx=(Math.random()-0.5)*0.15*val;
+      const jy=(Math.random()-0.5)*0.15*val;
+      const jz=(Math.random()-0.5)*0.15*val;
+      const nx=Math.cos(angle)*Math.cos(pitch)*len*st+jx;
+      const ny=Math.sin(pitch)*len*st+jy;
+      const nz=Math.sin(angle)*Math.cos(pitch)*len*st+jz;
+      verts.push(px,py,pz, nx,ny,nz);
+      px=nx;py=ny;pz=nz;
+      const c=lerp3(pal.a,pal.c,st);
+      const a=0.2+val*0.8;
+      cols.push(c[0]/255,c[1]/255,c[2]/255,a, c[0]/255,c[1]/255,c[2]/255,a*0.5);
+    }
+  }
+  drawLines(new Float32Array(verts), new Float32Array(cols), mvp, 1);
+  // Central pulsing cube
+  const cube=buildCubeLines(0.5+bass*0.8, 0, pal, 1, bass*1.5);
+  drawLines(cube.verts, cube.cols, mvp, 2.5);
+}
+
+function sceneTunnel(mvp, pal, bass, mid, high, avg, ts) {
+  const speed = ts*0.0008*(1+bass);
+  const SEGS=16;
+  for (let s=0;s<SEGS;s++) {
+    const t=s/SEGS;
+    const z=((t+speed)%1.0)*6-4;
+    const si=Math.floor(t*binCount*0.8);
+    const val=fdata?fdata[si]/255:0.2;
+    const scale=0.2+t*1.8+val*0.3;
+    const tMVP=buildMVP(rotX*0.3, rotY*0.2, ts*0.0001, 0, 0, z-1.5, scale);
+    const c=lerp3(pal.a,pal.b,t);
+    const alpha=(1-t)*0.5+val*0.5;
+    const cube=buildCubeLines(1, t, {a:c, b:lerp3(c,pal.c,0.5)}, alpha);
+    drawLines(cube.verts, cube.cols, tMVP, 1+val);
+  }
+}
+
+// ── GRID ─────────────────────────────────────────────
+function drawGridGL(pal, avg, ts) {
+  const N=20, step=0.3;
+  const verts=[], cols=[];
+  const c = lerp3(pal.a, pal.c, 0.5);
+  const ca = [c[0]/255, c[1]/255, c[2]/255, 0.06+avg*0.06];
+  for (let i=-N;i<=N;i++) {
+    verts.push(i*step,-1,-N*step, i*step,-1,N*step);
+    cols.push(...ca,...ca);
+    verts.push(-N*step,-1,i*step, N*step,-1,i*step);
+    cols.push(...ca,...ca);
+  }
+  const gMVP = buildMVP(0.5, rotY+ts*0.00005, 0);
+  drawLines(new Float32Array(verts), new Float32Array(cols), gMVP, 1);
+}
+
+// ── MAIN LOOP ────────────────────────────────────────
+let lastTs=0;
+function frame(ts) {
+  requestAnimationFrame(frame);
+  const dt = Math.min((ts-lastTs)/1000, 0.05); lastTs=ts;
+
+  // ── Read audio ──
+  let bass=0,mid=0,high=0,avg=0;
+  if (hasAudio && analyser) {
+    analyser.getByteFrequencyData(fdata);
+    analyser.getByteTimeDomainData(tdata);
+    const b=Math.floor(binCount*0.04), m=Math.floor(binCount*0.28);
+    let bs=0,ms=0,hs=0;
+    for(let i=0;i<b;i++) bs+=fdata[i];
+    for(let i=b;i<m;i++) ms+=fdata[i];
+    for(let i=m;i<binCount;i++) hs+=fdata[i];
+    bass=bs/(b*255); mid=ms/((m-b)*255); high=hs/((binCount-m)*255);
+    avg=(bass+mid+high)/3;
+  }
+
+  // ── Beat detection ──
+  const isBeat = detectBeat(bass, ts);
+
+  // ── Bass-reactive spin with momentum + damping ──
+  // On a strong beat: inject angular velocity kick
+  if (isBeat) {
+    const kick = 0.04 + bass * 0.18;
+    velY += kick * (Math.random()<0.5?1:-1);
+    velX += kick * 0.4 * (Math.random()<0.5?1:-1);
+  }
+  // Continuous bass pressure on spin
+  velY += (0.0003 + bass * 0.008) * dt * 60;
+  velX += bass * 0.002 * dt * 60 * Math.sin(ts*0.001);
+
+  // Apply velocity → rotation
+  rotY += velY * dt * 60;
+  rotX += velX * dt * 60;
+
+  // Damping — higher damping means snappier response
+  velY *= Math.pow(0.92, dt*60);
+  velX *= Math.pow(0.92, dt*60);
+
+  // ── HUD ──
+  document.getElementById('vb').textContent=String(Math.round(bass*999)).padStart(3,'0');
+  document.getElementById('vm').textContent=String(Math.round(mid*999)).padStart(3,'0');
+  document.getElementById('vh').textContent=String(Math.round(high*999)).padStart(3,'0');
+  document.getElementById('vbpm').textContent=bpm||'---';
+  document.getElementById('mb').style.width=Math.round(bass*80)+'px';
+  document.getElementById('mm').style.width=Math.round(mid*80)+'px';
+  document.getElementById('mh').style.width=Math.round(high*80)+'px';
+
+  // ── Particles ──
+  if (fxOn) {
+    if (bass > 0.45) spawnBurst(Math.floor(bass*20), bass, PALS[palIdx]);
+    updateParticles(dt);
+  }
+
+  // ── WebGL render ──
+  gl.clearColor(0, 0.008, 0.012, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+
+  const pal = PALS[palIdx];
+  const mvp = buildMVP(rotX, rotY);
+
+  // Grid
+  drawGridGL(pal, avg, ts);
+
+  // Scene
+  const scene = SCENES[sceneIdx];
+  if      (scene==='HYPERCUBE') sceneHypercube(mvp, pal, bass, mid, high, avg, ts);
+  else if (scene==='VORTEX')    sceneVortex(mvp, pal, bass, mid, high, avg, ts);
+  else if (scene==='PRISM')     scenePrism(mvp, pal, bass, mid, high, avg, ts);
+  else if (scene==='STORM')     sceneStorm(mvp, pal, bass, mid, high, avg, ts);
+  else if (scene==='TUNNEL')    sceneTunnel(mvp, pal, bass, mid, high, avg, ts);
+
+  // Particles
+  if (fxOn) {
+    const liveP = plife.reduce((acc,l,i)=>{ if(l>0){acc.v.push(ppos[i*3],ppos[i*3+1],ppos[i*3+2]);acc.c.push(pcol[i*4],pcol[i*4+1],pcol[i*4+2],pcol[i*4+3]);acc.s.push(psz[i]);}return acc;},{v:[],c:[],s:[]});
+    if (liveP.v.length>0) drawPoints(new Float32Array(liveP.v), new Float32Array(liveP.c), new Float32Array(liveP.s), mvp);
+  }
+
+  // ── FX pass (bloom + chroma aberration) ──
+  applyFX(bass, avg);
+}
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
