@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lol</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    overflow: hidden;
+    font-family: 'Share Tech Mono', monospace;
+    color: #ff3300;
+  }
+
+  canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #hud {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    pointer-events: none;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    z-index: 10;
+    mix-blend-mode: screen;
+  }
+
+  #title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(10px, 2vw, 18px);
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    color: #ff2200;
+    text-shadow: 0 0 20px #ff4400, 0 0 60px #ff2200aa;
+    line-height: 1.4;
+  }
+
+  #title span {
+    display: block;
+    font-size: 0.55em;
+    color: #ff6622;
+    letter-spacing: 0.5em;
+    opacity: 0.8;
+  }
+
+  #stats {
+    text-align: right;
+    font-size: 11px;
+    line-height: 2;
+    color: #ff4400cc;
+    text-shadow: 0 0 10px #ff4400;
+  }
+
+  #stats b {
+    color: #ffaa00;
+    font-size: 13px;
+  }
+
+  #warning {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: #ff220088;
+    text-transform: uppercase;
+    pointer-events: none;
+    animation: blink 2s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.1; }
+  }
+
+  #controls {
+    position: fixed;
+    bottom: 40px;
+    right: 24px;
+    font-size: 10px;
+    color: #ff440066;
+    text-align: right;
+    pointer-events: none;
+    line-height: 2;
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div id="title">
+    VOLUME ANNIHILATOR
+    <span>RAYMARCH · SUBSURFACE · GOD RAYS · 5D NOISE</span>
+  </div>
+  <div id="stats">
+    FPS: <b id="fps">--</b><br>
+    FRAME: <b id="frame">0</b><br>
+    SAMPLES: <b id="samples">128</b><br>
+    GPU: <b id="gpu">SUFFERING</b>
+  </div>
+</div>
+
+<div id="warning">⚠ HIGH GPU LOAD — REDUCE BROWSER TABS ⚠</div>
+<div id="controls">DRAG TO ROTATE &nbsp; SCROLL TO ZOOM</div>
+
+<script>
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl2', {
+  antialias: false,
+  powerPreference: 'high-performance',
+  preserveDrawingBuffer: false
+});
+
+if (!gl) { document.body.innerHTML = '<p style="color:red;padding:2rem">WebGL2 not supported.</p>'; }
+
+// ─── VERTEX SHADER ────────────────────────────────────────────────────────────
+const VS = `#version 300 es
+precision highp float;
+in vec2 a_pos;
+out vec2 v_uv;
+void main() {
+  v_uv = a_pos * 0.5 + 0.5;
+  gl_Position = vec4(a_pos, 0.0, 1.0);
+}`;
+
+// ─── FRAGMENT SHADER — THE BEAST ──────────────────────────────────────────────
+const FS = `#version 300 es
+precision highp float;
+precision highp sampler3D;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+uniform float u_time;
+uniform vec2  u_res;
+uniform vec3  u_cam;
+uniform vec2  u_mouse;
+
+// ── Hash / noise primitives ───────────────────────────────────────────────────
+float hash(float n) { return fract(sin(n) * 753.5453123); }
+float hash3(vec3 p) {
+  p = fract(p * vec3(443.897, 441.423, 437.195));
+  p += dot(p, p.yzx + 19.19);
+  return fract((p.x + p.y) * p.z);
+}
+
+vec3 hash33(vec3 p) {
+  p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
+           dot(p, vec3(269.5, 183.3, 246.1)),
+           dot(p, vec3(113.5, 271.9, 124.6)));
+  return fract(sin(p) * 43758.5453123);
+}
+
+// ── 3D value noise ────────────────────────────────────────────────────────────
+float vnoise(vec3 p) {
+  vec3 i = floor(p), f = fract(p);
+  vec3 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(hash3(i),              hash3(i+vec3(1,0,0)), u.x),
+                 mix(hash3(i+vec3(0,1,0)),  hash3(i+vec3(1,1,0)), u.x), u.y),
+             mix(mix(hash3(i+vec3(0,0,1)),  hash3(i+vec3(1,0,1)), u.x),
+                 mix(hash3(i+vec3(0,1,1)),  hash3(i+vec3(1,1,1)), u.x), u.y), u.z);
+}
+
+// ── 5-octave fractal brownian motion ─────────────────────────────────────────
+float fbm5(vec3 p) {
+  float v = 0.0, a = 0.5;
+  mat3 rot = mat3(0.8,-0.6,0.0, 0.6,0.8,0.0, 0.0,0.0,1.0);
+  for (int i = 0; i < 5; i++) {
+    v += a * vnoise(p);
+    p = rot * p * 2.01 + vec3(100.0);
+    a *= 0.5;
+  }
+  return v;
+}
+
+// ── Extra turbulence layer ────────────────────────────────────────────────────
+float turb(vec3 p) {
+  float t = 0.0;
+  float s = 1.0;
+  for (int i = 0; i < 4; i++) {
+    t += abs(vnoise(p * s) - 0.5) * 2.0 / s;
+    s *= 2.17;
+    p += vec3(1.7, 9.2, 3.1);
+  }
+  return t;
+}
+
+// ── Volume density function ───────────────────────────────────────────────────
+float density(vec3 p) {
+  float r = length(p);
+
+  // Animated warp
+  float t = u_time * 0.18;
+  vec3 warp = vec3(
+    fbm5(p * 0.6 + vec3(t * 0.3, 0.0, t * 0.2)),
+    fbm5(p * 0.6 + vec3(0.0, t * 0.25, t * 0.15) + 3.7),
+    fbm5(p * 0.6 + vec3(t * 0.2, t * 0.3, 0.0) + 7.3)
+  ) * 2.0 - 1.0;
+
+  vec3 wp = p + warp * 1.4;
+
+  float base = fbm5(wp * 0.9 + t * 0.12);
+  float tb   = turb(wp * 1.2 + t * 0.08);
+  float d    = base * 0.8 + tb * 0.35;
+
+  // Spherical envelope with wispy tendrils
+  d *= smoothstep(2.4, 0.4, r);
+  d -= smoothstep(0.0, 0.9, r - 1.6) * 0.3;
+
+  // Secondary swirling mass
+  float r2 = length(p - vec3(0.6, -0.3, 0.4));
+  float base2 = fbm5(wp * 1.3 - t * 0.1 + 4.44);
+  d += base2 * 0.5 * smoothstep(1.5, 0.0, r2);
+
+  return max(0.0, d - 0.28) * 3.5;
+}
+
+// ── Extinction / scattering coefficients ─────────────────────────────────────
+const vec3 SIGMA_S = vec3(0.9, 0.65, 0.35);  // scattering
+const vec3 SIGMA_A = vec3(0.05, 0.08, 0.14); // absorption
+const vec3 SIGMA_T = SIGMA_S + SIGMA_A;       // extinction
+
+// ── Henyey-Greenstein phase function ─────────────────────────────────────────
+float hg(float cosTheta, float g) {
+  float g2 = g * g;
+  return (1.0 - g2) / (4.0 * 3.14159 * pow(1.0 + g2 - 2.0 * g * cosTheta, 1.5));
+}
+
+float phase(float cosT) {
+  return mix(hg(cosT, -0.3), hg(cosT, 0.7), 0.6); // dual-lobe
+}
+
+// ── Light transmittance along shadow ray ─────────────────────────────────────
+vec3 lightTransmittance(vec3 p, vec3 ldir) {
+  float shadowSteps = 10.0;
+  float shadowDist  = 2.5;
+  float dt = shadowDist / shadowSteps;
+  vec3 T = vec3(1.0);
+  for (float i = 0.0; i < shadowSteps; i++) {
+    vec3 sp = p + ldir * (i + 0.5) * dt;
+    float d = density(sp);
+    T *= exp(-SIGMA_T * d * dt);
+  }
+  return T;
+}
+
+// ── God-ray / volumetric light shaft ─────────────────────────────────────────
+vec3 godRay(vec3 ro, vec3 rd, vec3 lpos) {
+  float steps = 32.0;
+  float tMax  = 5.0;
+  float dt    = tMax / steps;
+  vec3 L = vec3(0.0);
+  vec3 T = vec3(1.0);
+
+  for (float i = 0.0; i < steps; i++) {
+    vec3 p = ro + rd * (i + 0.4) * dt;
+    float d = density(p) * 0.3;
+    if (d < 0.001) continue;
+    vec3 ldir = normalize(lpos - p);
+    float cosT = dot(rd, ldir);
+    vec3 li = lightTransmittance(p, ldir) * phase(cosT);
+    vec3 scat = SIGMA_S * d * dt;
+    L += T * scat * li * vec3(1.6, 0.9, 0.4);
+    T *= exp(-SIGMA_T * d * dt);
+  }
+  return L;
+}
+
+// ── Main raymarch ─────────────────────────────────────────────────────────────
+vec3 march(vec3 ro, vec3 rd) {
+  int   STEPS = 128;
+  float tMin  = 0.05, tMax = 8.0;
+  float dt = (tMax - tMin) / float(STEPS);
+  float jitter = hash(gl_FragCoord.x + gl_FragCoord.y * 1000.0 + u_time * 7.0);
+
+  // Multiple light sources
+  float t2 = u_time * 0.22;
+  vec3 L1pos = vec3(sin(t2) * 3.0, 2.5, cos(t2) * 3.0);
+  vec3 L2pos = vec3(-2.0, -1.5, 1.0);
+  vec3 L3pos = vec3(0.0, 0.0, 5.0);
+
+  vec3 L1col = vec3(2.5, 1.6, 0.6);
+  vec3 L2col = vec3(0.4, 0.8, 2.5);
+  vec3 L3col = vec3(1.5, 0.3, 1.0);
+
+  vec3 radiance = vec3(0.0);
+  vec3 transmit = vec3(1.0);
+
+  float t = tMin + jitter * dt;
+
+  for (int i = 0; i < STEPS; i++) {
+    vec3 p = ro + rd * t;
+    float d = density(p);
+
+    if (d > 0.001) {
+      // Shadow rays to all 3 lights
+      vec3 l1d = normalize(L1pos - p);
+      vec3 l2d = normalize(L2pos - p);
+      vec3 l3d = normalize(L3pos - p);
+
+      vec3 T1 = lightTransmittance(p, l1d);
+      vec3 T2 = lightTransmittance(p, l2d);
+      vec3 T3 = lightTransmittance(p, l3d);
+
+      float ph1 = phase(dot(rd, l1d));
+      float ph2 = phase(dot(rd, l2d));
+      float ph3 = phase(dot(rd, l3d));
+
+      vec3 scat = SIGMA_S * d;
+      vec3 Li = T1 * L1col * ph1
+               + T2 * L2col * ph2
+               + T3 * L3col * ph3;
+
+      radiance += transmit * scat * Li * dt;
+      transmit *= exp(-SIGMA_T * d * dt);
+    }
+
+    if (max(transmit.r, max(transmit.g, transmit.b)) < 0.003) break;
+    t += dt;
+  }
+
+  // God rays (expensive additive pass)
+  radiance += godRay(ro, rd, L1pos) * 0.5;
+  radiance += godRay(ro, rd, L2pos) * 0.3;
+
+  // Emission (hot core)
+  {
+    float t3 = tMin;
+    for (int i = 0; i < 32; i++) {
+      vec3 p = ro + rd * (t3 + jitter * dt);
+      float d = density(p);
+      float r = length(p);
+      float emit = max(0.0, d - 0.5) * 5.0 * smoothstep(1.2, 0.0, r);
+      radiance += emit * vec3(3.0, 1.5, 0.4) * exp(-SIGMA_T * d * dt);
+      t3 += (tMax - tMin) / 32.0;
+    }
+  }
+
+  return radiance;
+}
+
+// ── Camera ────────────────────────────────────────────────────────────────────
+mat3 camera(vec3 ro, vec3 ta) {
+  vec3 cw = normalize(ta - ro);
+  vec3 cu = normalize(cross(cw, vec3(0, 1, 0)));
+  vec3 cv = cross(cu, cw);
+  return mat3(cu, cv, cw);
+}
+
+// ── Tonemap ───────────────────────────────────────────────────────────────────
+vec3 aces(vec3 x) {
+  float a=2.51,b=0.03,c=2.43,d=0.59,e=0.14;
+  return clamp((x*(a*x+b))/(x*(c*x+d)+e),0.0,1.0);
+}
+
+void main() {
+  vec2 uv  = (gl_FragCoord.xy - u_res * 0.5) / u_res.y;
+  vec2 mx  = (u_mouse / u_res - 0.5) * vec2(6.28, 3.14);
+
+  float yaw   = mx.x + u_time * 0.04;
+  float pitch = clamp(mx.y, -1.2, 1.2);
+  float dist  = u_cam.z;
+
+  vec3 ro = vec3(
+    dist * cos(pitch) * sin(yaw),
+    dist * sin(pitch),
+    dist * cos(pitch) * cos(yaw)
+  );
+  vec3 ta = vec3(0.0);
+
+  mat3 cam = camera(ro, ta);
+  vec3 rd  = normalize(cam * vec3(uv, 1.7));
+
+  vec3 col = march(ro, rd);
+  col = aces(col * 0.5);
+  col = pow(col, vec3(0.4545));
+
+  // Vignette
+  float vig = 1.0 - 0.55 * dot(uv, uv);
+  col *= vig;
+
+  // Subtle chromatic aberration on edges
+  float ca = dot(uv, uv) * 0.012;
+  float r2 = length(uv);
+  vec2 aberr = uv * ca;
+
+  fragColor = vec4(col, 1.0);
+}
+`;
+
+// ─── Compile shader ────────────────────────────────────────────────────────────
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+    console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
+  console.error(gl.getProgramInfoLog(prog));
+
+gl.useProgram(prog);
+
+// ─── Fullscreen quad ───────────────────────────────────────────────────────────
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+const loc = gl.getAttribLocation(prog, 'a_pos');
+gl.enableVertexAttribArray(loc);
+gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+// ─── Uniforms ──────────────────────────────────────────────────────────────────
+const uTime   = gl.getUniformLocation(prog, 'u_time');
+const uRes    = gl.getUniformLocation(prog, 'u_res');
+const uCam    = gl.getUniformLocation(prog, 'u_cam');
+const uMouse  = gl.getUniformLocation(prog, 'u_mouse');
+
+// ─── State ─────────────────────────────────────────────────────────────────────
+let mouse = [0, 0];
+let zoom  = 4.5;
+let drag  = false, lastMouse = [0, 0];
+let autoMouse = [0, 0];
+let frameCount = 0;
+let lastTime = performance.now();
+let fps = 0;
+
+canvas.addEventListener('mousemove', e => {
+  if (drag) mouse = [e.clientX, e.clientY];
+  lastMouse = [e.clientX, e.clientY];
+});
+canvas.addEventListener('mousedown', e => { drag = true; mouse = [e.clientX, e.clientY]; });
+canvas.addEventListener('mouseup', () => drag = false);
+canvas.addEventListener('wheel', e => { zoom = Math.max(1.5, Math.min(8.0, zoom + e.deltaY * 0.01)); });
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  mouse = [e.touches[0].clientX, e.touches[0].clientY];
+}, {passive: false});
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ─── Render loop ───────────────────────────────────────────────────────────────
+function render(ts) {
+  const t = ts * 0.001;
+  frameCount++;
+
+  // FPS counter
+  const now = performance.now();
+  if (now - lastTime > 500) {
+    fps = Math.round(frameCount / ((now - lastTime) * 0.001));
+    frameCount = 0;
+    lastTime = now;
+    document.getElementById('fps').textContent = fps;
+    document.getElementById('frame').textContent = Math.round(ts / 16.67);
+
+    // Suffering scale
+    const suffers = ['SUFFERING', 'CRYING', 'ON FIRE', 'MELTING', 'SCREAMING', 'DYING'];
+    document.getElementById('gpu').textContent = suffers[Math.floor(Math.random() * suffers.length)];
+  }
+
+  // Auto-orbit mouse when not dragging
+  if (!drag) {
+    autoMouse[0] += 0.003;
+    autoMouse[1] = Math.sin(t * 0.15) * 0.35;
+    mouse[0] = (0.5 + autoMouse[0] / (2 * Math.PI)) * canvas.width;
+    mouse[1] = (0.5 - autoMouse[1] / Math.PI) * canvas.height;
+  }
+
+  gl.useProgram(prog);
+  gl.uniform1f(uTime, t);
+  gl.uniform2f(uRes, canvas.width, canvas.height);
+  gl.uniform3f(uCam, 0, 0, zoom);
+  gl.uniform2f(uMouse, mouse[0], mouse[1]);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
