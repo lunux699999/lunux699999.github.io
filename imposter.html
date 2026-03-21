@@ -9,187 +9,87 @@
   --bg1:#7f1dff;
   --bg2:#c0208f;
   --bg3:#ff5e7e;
-  --panel:rgba(255,255,255,.12);
-  --panel-strong:rgba(255,255,255,.18);
-  --line:rgba(255,255,255,.24);
+  --panel:rgba(255,255,255,.11);
+  --panel-strong:rgba(255,255,255,.16);
+  --line:rgba(255,255,255,.22);
   --text:#fff;
   --muted:rgba(255,255,255,.78);
   --teal:#5ff6e5;
   --cyan:#5fd2ff;
   --yellow:#ffe27a;
   --pink:#ff87c0;
-  --shadow:0 20px 50px rgba(44,0,73,.28);
+  --shadow:0 16px 36px rgba(44,0,73,.20);
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
 body{
   font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;
   color:var(--text);
-  background:
-    radial-gradient(circle at 20% 10%, rgba(255,255,255,.12), transparent 18%),
-    radial-gradient(circle at 80% 0%, rgba(255,255,255,.08), transparent 20%),
-    linear-gradient(135deg,var(--bg1),var(--bg2) 52%,var(--bg3));
+  background:linear-gradient(135deg,var(--bg1),var(--bg2) 52%,var(--bg3));
   overflow-x:hidden;
 }
 body::before{
-  content:"";
-  position:fixed; inset:0;
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.08) 0 2px, transparent 2px 100%),
-    repeating-conic-gradient(from 0deg at 50% 35%, rgba(255,255,255,.05) 0deg 6deg, transparent 6deg 16deg);
-  background-size:22px 22px, 100% 100%;
-  opacity:.22; pointer-events:none;
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.2), transparent 18%),
+    radial-gradient(circle at 85% 0%, rgba(255,255,255,.14), transparent 20%),
+    radial-gradient(circle at 50% 70%, rgba(255,255,255,.08), transparent 16%),
+    radial-gradient(circle, rgba(255,255,255,.09) 0 1.5px, transparent 1.5px 100%);
+  background-size:auto,auto,auto,22px 22px;
 }
-.wrapper{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:24px}
+.wrapper{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
 .shell{
-  width:min(1200px,100%);
-  border-radius:28px;
-  background:rgba(90,15,128,.18);
-  border:2px solid rgba(255,255,255,.16);
-  box-shadow:var(--shadow);
-  padding:20px;
-  backdrop-filter:blur(10px);
+  width:min(1220px,100%);border-radius:28px;background:rgba(90,15,128,.16);
+  border:2px solid rgba(255,255,255,.16);box-shadow:var(--shadow);padding:18px;
 }
-.topbar{
-  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px;
-}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .lang-btn,.status-pill,.social-pill{
-  display:inline-flex;align-items:center;gap:10px;
-  padding:12px 16px;border-radius:16px;border:2px solid var(--line);
-  background:rgba(255,255,255,.08);backdrop-filter:blur(8px);font-weight:900;
+  display:inline-flex;align-items:center;gap:10px;padding:11px 15px;border-radius:16px;
+  border:2px solid var(--line);background:rgba(255,255,255,.08);font-weight:900;
 }
-.logo-wrap{display:grid;justify-items:center;gap:8px;flex:1;min-width:280px}
-.logo-badge{
-  position:relative;
-  animation:logoFloat 3.8s ease-in-out infinite;
-}
-.logo-badge svg{width:min(340px,52vw);height:auto;display:block;filter:drop-shadow(0 10px 0 rgba(62,0,92,.2)) drop-shadow(0 18px 30px rgba(38,0,58,.26));}
+.logo-wrap{display:grid;justify-items:center;gap:6px;flex:1;min-width:280px}
+.logo-badge{position:relative;animation:logoFloat 3.8s ease-in-out infinite}
+.logo-badge svg{width:min(340px,52vw);height:auto;display:block;filter:drop-shadow(0 8px 0 rgba(62,0,92,.18))}
 .logo-sparkle{position:absolute;border-radius:50%;background:#fff;opacity:.9;animation:twinkle 1.8s infinite}
-.spark1{width:10px;height:10px;top:12%;left:12%}
-.spark2{width:8px;height:8px;top:20%;right:8%;animation-delay:.7s}
-.spark3{width:12px;height:12px;bottom:18%;left:18%;animation-delay:1.1s}
-.logo-sub{font-size:16px;letter-spacing:.16em;text-transform:uppercase;font-weight:1000;text-shadow:0 3px 0 rgba(49,0,77,.35)}
+.spark1{width:10px;height:10px;top:12%;left:12%}.spark2{width:8px;height:8px;top:20%;right:8%;animation-delay:.7s}.spark3{width:12px;height:12px;bottom:18%;left:18%;animation-delay:1.1s}
+.logo-sub{font-size:15px;letter-spacing:.16em;text-transform:uppercase;font-weight:1000;text-shadow:0 2px 0 rgba(49,0,77,.35)}
 .streamers{display:grid;gap:10px;justify-items:end}
 .avatar-row{display:flex;gap:10px;align-items:center}
-.avatar-mini{
-  width:50px;height:50px;border-radius:50%;border:3px solid rgba(255,255,255,.85);
-  display:grid;place-items:center;font-size:24px;background:linear-gradient(180deg,#8f7dff,#ff89b2);
-  box-shadow:0 8px 18px rgba(44,0,73,.22);
-  animation:bob 2.8s ease-in-out infinite;
-}
+.avatar-mini{width:48px;height:48px;border-radius:50%;border:3px solid rgba(255,255,255,.85);display:grid;place-items:center;font-size:22px;background:linear-gradient(180deg,#8f7dff,#ff89b2);animation:bob 2.8s ease-in-out infinite}
 .avatar-mini:nth-child(2){animation-delay:.2s}.avatar-mini:nth-child(3){animation-delay:.4s}.avatar-mini:nth-child(4){animation-delay:.6s}.avatar-mini:nth-child(5){animation-delay:.8s}
 .main-grid{display:grid;grid-template-columns:1.2fr .78fr;gap:18px}
 .left-col,.right-col{display:grid;gap:18px}
-.panel{
-  background:var(--panel);border:2px solid var(--line);border-radius:24px;padding:18px;
-  backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+.panel,.list-card,.word-panel,.speaker-card,.reveal-card,.mode-card{
+  background:var(--panel);border:2px solid var(--line);border-radius:24px;padding:16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:0}
-.tab{
-  text-align:center;padding:12px 14px;border-radius:18px 18px 0 0;border:2px solid var(--line);border-bottom:none;
-  background:rgba(85,0,122,.22);font-size:16px;font-weight:1000;letter-spacing:.05em;text-transform:uppercase;
-}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tab{text-align:center;padding:12px 14px;border-radius:18px 18px 0 0;border:2px solid var(--line);border-bottom:none;background:rgba(85,0,122,.22);font-size:16px;font-weight:1000;text-transform:uppercase}
 .tab.active{color:var(--teal);text-shadow:0 2px 0 rgba(39,0,66,.45)}
 .hero-panel{padding-top:0;overflow:hidden}
-.hero-inner{
-  margin-top:-2px;border-top:2px solid var(--line);padding:26px 22px 22px;
-  display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:center;
-}
+.hero-inner{margin-top:-2px;border-top:2px solid var(--line);padding:24px 20px 20px;display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:center}
 .avatar-stage{display:grid;justify-items:center;gap:12px}
-.avatar{
-  width:178px;height:178px;border-radius:50%;position:relative;
-  background:linear-gradient(180deg,#9c60ff,#5ccff7);
-  border:6px solid rgba(255,255,255,.95);
-  box-shadow:0 10px 0 rgba(77,17,112,.22),0 18px 30px rgba(39,0,66,.28);
-  animation:bob 3.6s ease-in-out infinite;
-}
-.avatar .head{position:absolute;inset:18px 22px 38px;border-radius:46% 46% 42% 42%;background:#9153d8;border:4px solid #47206f}
-.avatar .eye{position:absolute;width:30px;height:34px;background:#fff;border:4px solid #47206f;border-radius:50%;top:50px}
-.avatar .eye.left{left:38px}.avatar .eye.right{right:38px}
-.avatar .eye::after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:#1f1740;top:10px;left:8px;animation:blink 4s infinite}
-.avatar .mouth{position:absolute;left:34px;right:34px;bottom:44px;height:24px;border:4px solid #47206f;border-radius:0 0 24px 24px;background:#ffd95e}
-.avatar .tooth{position:absolute;bottom:8px;width:16px;height:10px;background:#fff;border:3px solid #47206f;border-top:none;border-radius:0 0 6px 6px}
-.avatar .t1{left:18px}.avatar .t2{left:58px}.avatar .t3{right:58px}.avatar .t4{right:18px}
-.avatar .horn{position:absolute;top:-8px;left:76px;width:24px;height:30px;background:#ffcb3d;border:4px solid #47206f;border-radius:50% 50% 8px 8px;transform:rotate(3deg)}
-.avatar .help{position:absolute;right:-2px;bottom:8px;width:52px;height:52px;border-radius:50%;background:#fff;border:4px solid #8a74ff;display:grid;place-items:center;color:#39c3d5;font-weight:1000;font-size:28px}
-.hero-copy{display:grid;gap:14px}
-.big-copy{font-size:22px;line-height:1.2;font-weight:1000;text-transform:uppercase;text-shadow:0 3px 0 rgba(49,0,77,.35)}
-input,select{
-  width:100%;padding:15px 16px;border-radius:14px;border:2px solid rgba(255,255,255,.4);
-  background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:18px;outline:none;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.12);
-}
-input::placeholder{color:rgba(255,255,255,.72)}
-select option{color:#222}
-.btn-row,.phase-actions,.vote-grid{display:flex;gap:10px;flex-wrap:wrap}
-button{
-  border:none;border-radius:16px;padding:14px 20px;font:inherit;font-weight:1000;cursor:pointer;
-  letter-spacing:.03em;transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
-  box-shadow:0 8px 0 rgba(45,0,73,.22);
-}
-button:hover{transform:translateY(-2px) scale(1.01)}
-button:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(45,0,73,.2)}
-.primary{background:linear-gradient(180deg,#fefefe,#e8e5ff);color:#3f266a}
-.secondary{background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.24)}
-.good{background:linear-gradient(180deg,#86ffd1,#4ce7ba);color:#08483c}
-.danger{background:linear-gradient(180deg,#ff9cc5,#ff73a9);color:#5e0f39}
-.start-btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-width:220px;font-size:18px}
-.start-icon{width:28px;height:28px;border-radius:10px;background:linear-gradient(180deg,#80ffe7,#56cfef);display:grid;place-items:center;color:#29406a}
-.status-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.stat-card,.list-card,.word-panel,.speaker-card,.reveal-card{
-  background:var(--panel-strong);border:2px solid var(--line);border-radius:22px;padding:16px;backdrop-filter:blur(10px)
-}
-.stat-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:900}
-.stat-value{font-size:30px;font-weight:1000;margin-top:6px}
-.word-panel{text-align:center;padding:26px}
-.word-label{font-size:14px;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:var(--muted)}
-.word{font-size:clamp(42px,6vw,78px);font-weight:1000;line-height:1;text-transform:uppercase;margin-top:12px;text-shadow:0 4px 0 rgba(49,0,77,.3)}
-.hint{display:none;margin-top:12px;padding:10px 16px;border-radius:999px;background:rgba(255,226,122,.2);border:2px solid rgba(255,226,122,.4);font-weight:900}
-.players-grid,.score-list,.log{display:grid;gap:10px}
-.player-item,.score-item,.log-item{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:18px;
-  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18)
-}
-.player-meta{display:flex;align-items:center;gap:10px}
-.dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.85)}
-.tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:1000}
-.t-ready{background:rgba(95,246,229,.18);color:#8bfff2}.t-turn{background:rgba(255,226,122,.18);color:#fff2b6}.t-voted{background:rgba(95,210,255,.18);color:#c7f0ff}
-.speaker-card{text-align:center;display:grid;gap:10px}
-.speaker-name{font-size:34px;font-weight:1000;text-shadow:0 3px 0 rgba(49,0,77,.35)}
-.timer{font-size:70px;font-weight:1000;line-height:1;color:var(--teal)}
-.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.vote-btn{width:100%;text-align:left;background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.2)}
-.reveal-big{font-size:clamp(28px,4vw,48px);font-weight:1000;line-height:1.08;text-shadow:0 3px 0 rgba(49,0,77,.35)}
-.winner-banner{margin-top:12px;padding:16px;border-radius:18px;background:rgba(255,226,122,.2);border:2px solid rgba(255,226,122,.42);font-size:24px;font-weight:1000;text-align:center}
-.section-title{font-size:14px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);text-shadow:0 2px 0 rgba(49,0,77,.35);margin-bottom:10px}
-.small{font-size:13px;color:var(--muted)}
-.howto{min-height:462px;display:grid;grid-template-rows:auto 1fr auto;align-items:start}
-.owl-wrap{display:flex;justify-content:center;gap:22px;align-items:end;margin:14px 0 8px}
-.owl{position:relative;width:118px;height:138px;animation:bob 3s ease-in-out infinite}
-.owl:nth-child(2){animation-delay:.4s}
-.owl-head{position:absolute;top:10px;left:12px;width:94px;height:82px;border-radius:26px;background:#7f5ad7;border:4px solid #4b2d85}
-.owl:nth-child(2) .owl-head{background:#b8b6df}
-.owl-eye{position:absolute;top:22px;width:28px;height:34px;border-radius:50%;background:#fff;border:4px solid #4b2d85}
-.owl-eye.left{left:18px}.owl-eye.right{right:18px}
-.owl-eye::after{content:"";position:absolute;top:7px;left:7px;width:10px;height:10px;border-radius:50%;background:#2f1a54}
-.owl-beak{position:absolute;top:46px;left:44px;width:18px;height:14px;background:#ffcf5a;border:4px solid #4b2d85;border-radius:8px}
-.owl-body{position:absolute;bottom:8px;left:20px;width:80px;height:58px;border-radius:18px 18px 14px 14px;background:#6a4db9;border:4px solid #4b2d85}
-.owl:nth-child(2) .owl-body{background:#8b86cc}
-.owl-pad{position:absolute;bottom:0;left:12px;width:96px;height:34px;border-radius:10px;background:#7f57c6;border:4px solid #4b2d85}
-.owl-cap{position:absolute;top:8px;left:34px;width:44px;height:12px;background:linear-gradient(90deg,#58d7ff 0 25%,#ff7aa8 25% 50%,#ffe27a 50% 75%,#68efb1 75%);border:4px solid #4b2d85;border-radius:999px}
-.carousel-dots{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px}
-.dot-nav{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.34);border:2px solid rgba(255,255,255,.4)}
-.dot-nav.active{background:#fff}
-.arrow{font-size:28px;font-weight:1000;opacity:.7}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(-1deg)}}
-@keyframes twinkle{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.2);opacity:1}}
-@keyframes blink{0%,45%,100%{transform:scaleY(1)}48%,52%{transform:scaleY(.1)}}
-@media (max-width:980px){
-  .main-grid{grid-template-columns:1fr}
-  .hero-inner{grid-template-columns:1fr;justify-items:center;text-align:center}
-  .status-grid,.vote-grid{grid-template-columns:1fr}
-}
+.avatar{width:178px;height:178px;border-radius:50%;position:relative;background:linear-gradient(180deg,#9c60ff,#5ccff7);border:6px solid rgba(255,255,255,.95);box-shadow:0 8px 0 rgba(77,17,112,.20);animation:bob 3.6s ease-in-out infinite}
+.avatar .head{position:absolute;inset:18px 22px 38px;border-radius:46% 46% 42% 42%;background:#9153d8;border:4px solid #47206f}.avatar .eye{position:absolute;width:30px;height:34px;background:#fff;border:4px solid #47206f;border-radius:50%;top:50px}.avatar .eye.left{left:38px}.avatar .eye.right{right:38px}.avatar .eye::after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:#1f1740;top:10px;left:8px;animation:blink 4s infinite}.avatar .mouth{position:absolute;left:34px;right:34px;bottom:44px;height:24px;border:4px solid #47206f;border-radius:0 0 24px 24px;background:#ffd95e}.avatar .tooth{position:absolute;bottom:8px;width:16px;height:10px;background:#fff;border:3px solid #47206f;border-top:none;border-radius:0 0 6px 6px}.avatar .t1{left:18px}.avatar .t2{left:58px}.avatar .t3{right:58px}.avatar .t4{right:18px}.avatar .horn{position:absolute;top:-8px;left:76px;width:24px;height:30px;background:#ffcb3d;border:4px solid #47206f;border-radius:50% 50% 8px 8px;transform:rotate(3deg)}.avatar .help{position:absolute;right:-2px;bottom:8px;width:52px;height:52px;border-radius:50%;background:#fff;border:4px solid #8a74ff;display:grid;place-items:center;color:#39c3d5;font-weight:1000;font-size:28px}
+.hero-copy{display:grid;gap:14px}.big-copy{font-size:22px;line-height:1.2;font-weight:1000;text-transform:uppercase;text-shadow:0 2px 0 rgba(49,0,77,.35)}
+input,select,textarea{width:100%;padding:14px 16px;border-radius:14px;border:2px solid rgba(255,255,255,.34);background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:17px;outline:none}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.72)}select option{color:#222}
+.btn-row,.phase-actions{display:flex;gap:10px;flex-wrap:wrap}
+button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight:1000;cursor:pointer;letter-spacing:.03em;transition:transform .12s ease, filter .12s ease;box-shadow:0 6px 0 rgba(45,0,73,.18)}
+button:hover{transform:translateY(-1px)}button:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(45,0,73,.18)}
+.primary{background:linear-gradient(180deg,#fefefe,#e8e5ff);color:#3f266a}.secondary{background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.24)}.good{background:linear-gradient(180deg,#86ffd1,#4ce7ba);color:#08483c}.danger{background:linear-gradient(180deg,#ff9cc5,#ff73a9);color:#5e0f39}
+.start-btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-width:220px;font-size:18px}.start-icon{width:28px;height:28px;border-radius:10px;background:linear-gradient(180deg,#80ffe7,#56cfef);display:grid;place-items:center;color:#29406a}
+.status-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}.stat-card{background:var(--panel-strong);border:2px solid var(--line);border-radius:22px;padding:14px}.stat-title{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:900}.stat-value{font-size:28px;font-weight:1000;margin-top:6px}
+.word-panel{text-align:center;padding:22px 18px}.word-label{font-size:14px;text-transform:uppercase;letter-spacing:.14em;font-weight:900;color:var(--muted)}.word{font-size:clamp(40px,6vw,76px);font-weight:1000;line-height:1;text-transform:uppercase;margin-top:12px;text-shadow:0 3px 0 rgba(49,0,77,.28)}.hint{display:none;margin-top:12px;padding:10px 16px;border-radius:999px;background:rgba(255,226,122,.18);border:2px solid rgba(255,226,122,.34);font-weight:900}.asset-box{margin-top:16px;display:none;justify-content:center}.asset-card{background:rgba(255,255,255,.1);border:2px solid var(--line);border-radius:22px;padding:18px;max-width:680px;width:100%}
+.picture-display{font-size:100px;line-height:1;text-align:center}.picture-caption{margin-top:10px;font-size:20px;font-weight:1000;text-align:center}.audio-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.draw-wrap{display:grid;gap:12px}.draw-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.draw-canvas{width:100%;height:320px;background:#fff;border-radius:18px;border:3px solid rgba(255,255,255,.24);cursor:crosshair;touch-action:none}
+.players-grid,.score-list,.log{display:grid;gap:10px}.player-item,.score-item,.log-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18)}.player-meta{display:flex;align-items:center;gap:10px}.dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.85)}.tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:1000}.t-ready{background:rgba(95,246,229,.18);color:#8bfff2}.t-turn{background:rgba(255,226,122,.18);color:#fff2b6}.t-voted{background:rgba(95,210,255,.18);color:#c7f0ff}
+.speaker-card{text-align:center;display:grid;gap:10px}.speaker-name{font-size:34px;font-weight:1000;text-shadow:0 2px 0 rgba(49,0,77,.35)}.timer{font-size:68px;font-weight:1000;line-height:1;color:var(--teal)}.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vote-btn{width:100%;text-align:left;background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.2)}
+.reveal-big{font-size:clamp(28px,4vw,48px);font-weight:1000;line-height:1.08;text-shadow:0 2px 0 rgba(49,0,77,.35)}.winner-banner{margin-top:12px;padding:16px;border-radius:18px;background:rgba(255,226,122,.18);border:2px solid rgba(255,226,122,.34);font-size:24px;font-weight:1000;text-align:center}.section-title{font-size:14px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);text-shadow:0 2px 0 rgba(49,0,77,.35);margin-bottom:10px}.small{font-size:13px;color:var(--muted)}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mode-btn{padding:14px;border-radius:18px;border:2px solid rgba(255,255,255,.24);background:rgba(255,255,255,.1);font-weight:1000;text-align:left}.mode-btn.active{outline:3px solid rgba(95,246,229,.4);background:rgba(95,246,229,.14)}
+.howto{min-height:450px;display:grid;grid-template-rows:auto 1fr auto;align-items:start}.owl-wrap{display:flex;justify-content:center;gap:22px;align-items:end;margin:12px 0 8px}.owl{position:relative;width:118px;height:138px;animation:bob 3s ease-in-out infinite}.owl:nth-child(2){animation-delay:.4s}.owl-head{position:absolute;top:10px;left:12px;width:94px;height:82px;border-radius:26px;background:#7f5ad7;border:4px solid #4b2d85}.owl:nth-child(2) .owl-head{background:#b8b6df}.owl-eye{position:absolute;top:22px;width:28px;height:34px;border-radius:50%;background:#fff;border:4px solid #4b2d85}.owl-eye.left{left:18px}.owl-eye.right{right:18px}.owl-eye::after{content:"";position:absolute;top:7px;left:7px;width:10px;height:10px;border-radius:50%;background:#2f1a54}.owl-beak{position:absolute;top:46px;left:44px;width:18px;height:14px;background:#ffcf5a;border:4px solid #4b2d85;border-radius:8px}.owl-body{position:absolute;bottom:8px;left:20px;width:80px;height:58px;border-radius:18px 18px 14px 14px;background:#6a4db9;border:4px solid #4b2d85}.owl:nth-child(2) .owl-body{background:#8b86cc}.owl-pad{position:absolute;bottom:0;left:12px;width:96px;height:34px;border-radius:10px;background:#7f57c6;border:4px solid #4b2d85}.owl-cap{position:absolute;top:8px;left:34px;width:44px;height:12px;background:linear-gradient(90deg,#58d7ff 0 25%,#ff7aa8 25% 50%,#ffe27a 50% 75%,#68efb1 75%);border:4px solid #4b2d85;border-radius:999px}.carousel-dots{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px}.dot-nav{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.34);border:2px solid rgba(255,255,255,.4)}.dot-nav.active{background:#fff}.arrow{font-size:28px;font-weight:1000;opacity:.7}
+.match-view .topbar,.match-view .hero-setup{display:none}.match-view .shell{padding-top:18px}.match-view .main-grid{grid-template-columns:1fr .78fr}.match-view .left-col{grid-template-rows:auto auto auto 1fr}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-6px) rotate(-1deg)}}@keyframes twinkle{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.15);opacity:1}}@keyframes blink{0%,45%,100%{transform:scaleY(1)}48%,52%{transform:scaleY(.1)}}
+@media (max-width:980px){.main-grid,.match-view .main-grid{grid-template-columns:1fr}.hero-inner{grid-template-columns:1fr;justify-items:center;text-align:center}.status-grid,.vote-grid,.mode-grid{grid-template-columns:1fr}.streamers{justify-items:start}}
 </style>
 </head>
 <body>
@@ -208,67 +108,64 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(45,0,73,.2)}
             <circle cx="210" cy="128" r="13" fill="#5fd2ff" stroke="#4e136f" stroke-width="6"/>
             <path d="M203 128h14M210 121v14" stroke="#4e136f" stroke-width="4" stroke-linecap="round"/>
           </svg>
-          <span class="logo-sparkle spark1"></span>
-          <span class="logo-sparkle spark2"></span>
-          <span class="logo-sparkle spark3"></span>
+          <span class="logo-sparkle spark1"></span><span class="logo-sparkle spark2"></span><span class="logo-sparkle spark3"></span>
         </div>
-        <div class="logo-sub">The odd word game</div>
+        <div class="logo-sub">The odd one out game</div>
       </div>
       <div class="streamers">
         <div class="social-pill">🎥 LIVE PLAYERS</div>
         <div class="avatar-row">
-          <div class="avatar-mini">🕵️</div>
-          <div class="avatar-mini">👾</div>
-          <div class="avatar-mini">😎</div>
-          <div class="avatar-mini">🎭</div>
-          <div class="avatar-mini">🦉</div>
+          <div class="avatar-mini">🕵️</div><div class="avatar-mini">👾</div><div class="avatar-mini">😎</div><div class="avatar-mini">🎭</div><div class="avatar-mini">🦉</div>
         </div>
       </div>
     </div>
 
     <div class="main-grid">
       <div class="left-col">
-        <div>
-          <div class="tabs">
-            <div class="tab active">Anonymous</div>
-            <div class="tab">Authenticated</div>
-          </div>
+        <div class="hero-setup">
+          <div class="tabs"><div class="tab active">Anonymous</div><div class="tab">Authenticated</div></div>
           <div class="panel hero-panel">
             <div class="hero-inner">
               <div class="avatar-stage">
-                <div class="avatar">
-                  <div class="horn"></div>
-                  <div class="head"></div>
-                  <div class="eye left"></div>
-                  <div class="eye right"></div>
-                  <div class="mouth">
-                    <span class="tooth t1"></span><span class="tooth t2"></span><span class="tooth t3"></span><span class="tooth t4"></span>
-                  </div>
-                  <div class="help">?</div>
-                </div>
+                <div class="avatar"><div class="horn"></div><div class="head"></div><div class="eye left"></div><div class="eye right"></div><div class="mouth"><span class="tooth t1"></span><span class="tooth t2"></span><span class="tooth t3"></span><span class="tooth t4"></span></div><div class="help">?</div></div>
               </div>
               <div class="hero-copy">
-                <div class="big-copy">Choose a character and a nickname</div>
-                <input id="nameInput" maxlength="18" placeholder="Enter your nickname" />
-                <div class="btn-row">
-                  <button id="createBtn" class="primary">Create Room</button>
-                  <button id="joinBtn" class="secondary">Join Room</button>
-                </div>
+                <div class="big-copy">Choose a character and a real name</div>
+                <input id="nameInput" maxlength="24" placeholder="Enter your real name" />
+                <div class="btn-row"><button id="createBtn" class="primary">Create Room</button><button id="joinBtn" class="secondary">Join Room</button></div>
                 <input id="roomInput" maxlength="6" placeholder="Room code" />
-                <div class="btn-row">
-                  <button id="copyBtn" class="secondary">Copy Invite</button>
-                  <button id="leaveBtn" class="danger">Leave</button>
-                </div>
-                <div class="btn-row">
-                  <button id="readyBtn" class="good">Ready Up</button>
-                  <button id="startBtn" class="primary start-btn"><span class="start-icon">▶</span> Start</button>
-                </div>
-                <div class="btn-row">
-                  <div class="status-pill">Room: <strong id="roomCode">—</strong></div>
-                  <div class="status-pill">Status: <strong id="statusText">Offline</strong></div>
-                </div>
+                <div class="btn-row"><button id="copyBtn" class="secondary">Copy Invite</button><button id="leaveBtn" class="danger">Leave</button></div>
+                <div class="btn-row"><button id="readyBtn" class="good">Ready Up</button><button id="startBtn" class="primary start-btn"><span class="start-icon">▶</span> Start</button></div>
+                <div class="btn-row"><div class="status-pill">Room: <strong id="roomCode">—</strong></div><div class="status-pill">Status: <strong id="statusText">Offline</strong></div></div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="mode-card">
+          <div class="section-title">Choose mode</div>
+          <div class="mode-grid" id="modeGrid">
+            <button class="mode-btn active" data-mode="word">📝 Word mode<br><span class="small">Words are similar, one is different</span></button>
+            <button class="mode-btn" data-mode="picture">🖼️ Picture mode<br><span class="small">Everyone gets similar images, one different</span></button>
+            <button class="mode-btn" data-mode="draw">✏️ Drawing mode<br><span class="small">Draw your prompt, one player draws another</span></button>
+            <button class="mode-btn" data-mode="sound">🔊 Sound mode<br><span class="small">Listen to similar clips, one player hears another</span></button>
+          </div>
+          <div class="btn-row" style="margin-top:12px">
+            <div class="status-pill">Selected: <strong id="modeText">Word</strong></div>
+            <div class="status-pill">Speak time: <strong id="timeSettingLabel">60s</strong></div>
+          </div>
+          <div class="btn-row" style="margin-top:12px">
+            <select id="speakSeconds" style="max-width:180px">
+              <option value="20">20 sec</option>
+              <option value="30">30 sec</option>
+              <option value="45">45 sec</option>
+              <option value="60" selected>60 sec</option>
+            </select>
+            <select id="targetScore" style="max-width:180px">
+              <option value="3" selected>3 points</option>
+              <option value="5">5 points</option>
+              <option value="7">7 points</option>
+            </select>
           </div>
         </div>
 
@@ -276,6 +173,9 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(45,0,73,.2)}
           <div class="word-label" id="wordLabel">Join a room to begin</div>
           <div class="word" id="myWord">—</div>
           <div class="hint" id="myHint"></div>
+          <div class="asset-box" id="assetBox">
+            <div class="asset-card" id="assetCard"></div>
+          </div>
           <div class="phase-actions" id="phaseActions" style="margin-top:16px"></div>
         </div>
 
@@ -283,15 +183,21 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(45,0,73,.2)}
           <div class="stat-card"><div class="stat-title">Phase</div><div class="stat-value" id="phaseText">Lobby</div></div>
           <div class="stat-card"><div class="stat-title">Round</div><div class="stat-value" id="roundText">0</div></div>
           <div class="stat-card"><div class="stat-title">Turn</div><div class="stat-value" id="turnText">—</div></div>
+          <div class="stat-card"><div class="stat-title">Mode</div><div class="stat-value" id="modeStatText">Word</div></div>
         </div>
 
         <div class="panel speaker-card">
           <div class="section-title">Speaking turn</div>
           <div class="speaker-name" id="speakerName">Nobody yet</div>
-          <div class="small">Give one clue that fits your word without saying the word itself.</div>
+          <div class="small">Give one clue that fits your prompt without saying it directly. The host or current speaker can pass the turn.</div>
           <div class="timer" id="timerText">0</div>
+          <div class="btn-row" style="justify-content:center">
+            <button id="passTurnBtn" class="secondary">Pass Turn</button>
+            <button id="playSoundBtn" class="secondary" style="display:none">Play My Sound</button>
+            <button id="clearDrawBtn" class="secondary" style="display:none">Clear Drawing</button>
+          </div>
           <div class="section-title" style="margin-top:10px">Voting</div>
-          <div class="small">When voting starts, pick the player with the different word.</div>
+          <div class="small">When voting starts, pick the player with the different prompt.</div>
           <div id="voteGrid" class="vote-grid"></div>
         </div>
       </div>
@@ -299,52 +205,13 @@ button:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(45,0,73,.2)}
       <div class="right-col">
         <div class="panel howto">
           <div class="section-title" style="text-align:center;font-size:18px">How to play</div>
-          <div class="owl-wrap">
-            <div class="owl">
-              <div class="owl-head">
-                <div class="owl-eye left"></div><div class="owl-eye right"></div><div class="owl-beak"></div>
-              </div>
-              <div class="owl-body"></div>
-              <div class="owl-pad"></div>
-            </div>
-            <div class="owl">
-              <div class="owl-head">
-                <div class="owl-cap"></div>
-                <div class="owl-eye left"></div><div class="owl-eye right"></div><div class="owl-beak"></div>
-              </div>
-              <div class="owl-body"></div>
-              <div class="owl-pad"></div>
-            </div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-size:22px;font-weight:1000;text-transform:uppercase">5. See what happened</div>
-            <div class="small" style="font-size:16px;color:#fff;margin-top:8px">Watch the hilarious results of the round and find out whether the imposter got away.</div>
-          </div>
-          <div class="carousel-dots">
-            <span class="arrow">◀</span>
-            <span class="dot-nav"></span><span class="dot-nav"></span><span class="dot-nav"></span><span class="dot-nav"></span><span class="dot-nav active"></span><span class="dot-nav"></span>
-            <span class="arrow">▶</span>
-          </div>
+          <div class="owl-wrap"><div class="owl"><div class="owl-head"><div class="owl-eye left"></div><div class="owl-eye right"></div><div class="owl-beak"></div></div><div class="owl-body"></div><div class="owl-pad"></div></div><div class="owl"><div class="owl-head"><div class="owl-cap"></div><div class="owl-eye left"></div><div class="owl-eye right"></div><div class="owl-beak"></div></div><div class="owl-body"></div><div class="owl-pad"></div></div></div>
+          <div style="text-align:center"><div style="font-size:22px;font-weight:1000;text-transform:uppercase">5. See what happened</div><div class="small" style="font-size:16px;color:#fff;margin-top:8px">Watch the results of the round and see whether the imposter matched the rest of the group.</div></div>
+          <div class="carousel-dots"><span class="arrow">◀</span><span class="dot-nav"></span><span class="dot-nav"></span><span class="dot-nav"></span><span class="dot-nav"></span><span class="dot-nav active"></span><span class="dot-nav"></span><span class="arrow">▶</span></div>
         </div>
-
-        <div class="list-card">
-          <div class="section-title">Players</div>
-          <div id="playersList" class="players-grid"></div>
-        </div>
-
-        <div class="list-card">
-          <div class="section-title">Scoreboard</div>
-          <div id="scoreboard" class="score-list"></div>
-        </div>
-
-        <div class="reveal-card">
-          <div class="section-title">Round reveal</div>
-          <div class="reveal-big" id="revealText">No round yet</div>
-          <div class="small" id="revealMeta" style="margin-top:8px"></div>
-          <div id="winnerBanner"></div>
-          <div class="section-title" style="margin-top:16px">Activity</div>
-          <div id="activityLog" class="log"></div>
-        </div>
+        <div class="list-card"><div class="section-title">Players</div><div id="playersList" class="players-grid"></div></div>
+        <div class="list-card"><div class="section-title">Scoreboard</div><div id="scoreboard" class="score-list"></div></div>
+        <div class="reveal-card"><div class="section-title">Round reveal</div><div class="reveal-big" id="revealText">No round yet</div><div class="small" id="revealMeta" style="margin-top:8px"></div><div id="winnerBanner"></div><div class="section-title" style="margin-top:16px">Activity</div><div id="activityLog" class="log"></div></div>
       </div>
     </div>
   </div>
@@ -363,7 +230,6 @@ const firebaseConfig = {
     appId: "1:529695719240:web:1d17517bcf118b9092fd7d",
     measurementId: "G-XCHF7VPH75"
 };
-
 const firebaseReady = Object.values(firebaseConfig).every(v => v && !String(v).includes('PASTE_YOURS'));
 let db = null;
 if (firebaseReady) {
@@ -372,21 +238,62 @@ if (firebaseReady) {
 }
 
 const WORD_SETS = [
-  { real: 'Beach', imposter: 'Ocean', hint: 'waves, coast, blue' },
-  { real: 'Apple', imposter: 'Pear', hint: 'fruit, sweet, tree' },
-  { real: 'Pizza', imposter: 'Burger', hint: 'takeaway, dinner, cheesy' },
-  { real: 'Dog', imposter: 'Wolf', hint: 'canine, fur, howl' },
-  { real: 'Car', imposter: 'Bus', hint: 'road, wheels, transport' },
-  { real: 'Laptop', imposter: 'Tablet', hint: 'screen, battery, portable' },
-  { real: 'Coffee', imposter: 'Tea', hint: 'hot drink, mug, morning' },
-  { real: 'Football', imposter: 'Rugby', hint: 'field, team, ball' },
-  { real: 'Doctor', imposter: 'Nurse', hint: 'hospital, uniform, patients' },
-  { real: 'Cinema', imposter: 'Theatre', hint: 'tickets, seats, evening' },
-  { real: 'Cake', imposter: 'Cookie', hint: 'dessert, sugar, baked' },
-  { real: 'Rain', imposter: 'Snow', hint: 'weather, sky, cold' }
+  { real:'Forest', imposter:'Jungle', hint:'dense, canopy, alive' },
+  { real:'Beach', imposter:'Coast', hint:'shoreline, horizon, open' },
+  { real:'Apple', imposter:'Pear', hint:'orchard, skin, sweet' },
+  { real:'Coffee', imposter:'Tea', hint:'steep, warm, sip' },
+  { real:'Doctor', imposter:'Nurse', hint:'ward, routine, patients' },
+  { real:'Cinema', imposter:'Theatre', hint:'tickets, audience, evening' },
+  { real:'Laptop', imposter:'Tablet', hint:'portable, screen, battery' },
+  { real:'Bus', imposter:'Train', hint:'route, station, commute' },
+  { real:'Cake', imposter:'Pie', hint:'slice, dessert, filling' },
+  { real:'Lion', imposter:'Tiger', hint:'predator, stripes? maybe not, wild' },
+  { real:'School', imposter:'University', hint:'classes, campus, study' },
+  { real:'Pencil', imposter:'Pen', hint:'notes, pocket, desk' },
+  { real:'Rain', imposter:'Snow', hint:'weather, falling, cold' },
+  { real:'Guitar', imposter:'Violin', hint:'strings, case, performance' },
+  { real:'Camping', imposter:'Hiking', hint:'trail, gear, outdoors' },
+  { real:'Shark', imposter:'Dolphin', hint:'fin, ocean, swift' },
+  { real:'Burger', imposter:'Pizza', hint:'takeout, share, comfort food' },
+  { real:'Volcano', imposter:'Mountain', hint:'summit, rock, landscape' },
+  { real:'Clock', imposter:'Watch', hint:'timepiece, hands, ticking' },
+  { real:'Desert', imposter:'Savanna', hint:'heat, horizon, open land' },
+  { real:'Castle', imposter:'Palace', hint:'grand, old, halls' },
+  { real:'Robot', imposter:'Android', hint:'artificial, metallic, future' },
+  { real:'Helmet', imposter:'Mask', hint:'wearable, face, protection' },
+  { real:'Airport', imposter:'Harbor', hint:'departures, arrivals, travel' }
 ];
-const COLORS = ['#ff8ab3','#7dc7ff','#ffd36f','#72d88b','#ae8cff','#ffad66','#67e7d8','#ff9b63'];
-const local = { id:'p-'+Math.random().toString(36).slice(2,10), room:null, roomData:null, player:null, isHost:false, ref:null };
+const PICTURE_SETS = [
+  { real:{ icon:'🌋', label:'Volcano' }, imposter:{ icon:'⛰️', label:'Mountain' }, hint:'landform, high, dramatic' },
+  { real:{ icon:'🐺', label:'Wolf' }, imposter:{ icon:'🦊', label:'Fox' }, hint:'wild, fur, night' },
+  { real:{ icon:'🚲', label:'Bicycle' }, imposter:{ icon:'🛴', label:'Scooter' }, hint:'ride, wheels, street' },
+  { real:{ icon:'🎻', label:'Violin' }, imposter:{ icon:'🎸', label:'Guitar' }, hint:'instrument, strings, stage' },
+  { real:{ icon:'🏝️', label:'Island' }, imposter:{ icon:'🏖️', label:'Beach' }, hint:'sand, water, travel' },
+  { real:{ icon:'🕯️', label:'Candle' }, imposter:{ icon:'💡', label:'Bulb' }, hint:'light, glow, room' },
+  { real:{ icon:'🐙', label:'Octopus' }, imposter:{ icon:'🦑', label:'Squid' }, hint:'sea creature, tentacles' },
+  { real:{ icon:'🎧', label:'Headphones' }, imposter:{ icon:'📻', label:'Radio' }, hint:'audio, listen, signal' }
+];
+const DRAW_SETS = [
+  { real:'Draw a dragon', imposter:'Draw a dinosaur', hint:'big creature, scales, tail' },
+  { real:'Draw a lighthouse', imposter:'Draw a tower', hint:'tall, silhouette, landmark' },
+  { real:'Draw a pirate ship', imposter:'Draw a sailboat', hint:'watercraft, sails, sea' },
+  { real:'Draw a camera', imposter:'Draw binoculars', hint:'gear, travel, look' },
+  { real:'Draw a mushroom', imposter:'Draw a tree', hint:'forest, stem, outdoors' },
+  { real:'Draw a rocket', imposter:'Draw an airplane', hint:'travel, speed, sky' },
+  { real:'Draw a crown', imposter:'Draw a helmet', hint:'headwear, shape, shiny' },
+  { real:'Draw a treasure chest', imposter:'Draw a suitcase', hint:'box, carry, open' }
+];
+const SOUND_SETS = [
+  { real:{ label:'Soft bell chime', preset:'bellA' }, imposter:{ label:'Glass ping', preset:'bellB' }, hint:'bright, short, metallic' },
+  { real:{ label:'Low engine hum', preset:'humA' }, imposter:{ label:'Air conditioner hum', preset:'humB' }, hint:'steady, mechanical, background' },
+  { real:{ label:'Bird chirp cluster', preset:'chirpA' }, imposter:{ label:'Cricket pulse', preset:'chirpB' }, hint:'nature, repeating, small' },
+  { real:{ label:'Retro beep', preset:'beepA' }, imposter:{ label:'Arcade boop', preset:'beepB' }, hint:'electronic, short, playful' },
+  { real:{ label:'Wood tap rhythm', preset:'tapA' }, imposter:{ label:'Clack rhythm', preset:'tapB' }, hint:'percussive, dry, quick' },
+  { real:{ label:'Soft alarm tone', preset:'alarmA' }, imposter:{ label:'Digital ping tone', preset:'alarmB' }, hint:'notification, wakeful, repeating' }
+];
+
+const COLORS = ['#ff8ab3','#7dc7ff','#ffd36f','#72d88b','#ae8cff','#ffad66','#67e7d8','#ff9b63','#ffd8a8','#8ed7ff','#7effc2','#f79cff'];
+const local = { id:'p-'+Math.random().toString(36).slice(2,10), room:null, roomData:null, player:null, isHost:false, ref:null, selectedMode:'word' };
 const els = {
   nameInput: document.getElementById('nameInput'), roomInput: document.getElementById('roomInput'), roomCode: document.getElementById('roomCode'),
   statusText: document.getElementById('statusText'), playersList: document.getElementById('playersList'), scoreboard: document.getElementById('scoreboard'),
@@ -394,19 +301,48 @@ const els = {
   wordLabel: document.getElementById('wordLabel'), myWord: document.getElementById('myWord'), myHint: document.getElementById('myHint'),
   speakerName: document.getElementById('speakerName'), timerText: document.getElementById('timerText'), voteGrid: document.getElementById('voteGrid'),
   revealText: document.getElementById('revealText'), revealMeta: document.getElementById('revealMeta'), activityLog: document.getElementById('activityLog'),
-  phaseActions: document.getElementById('phaseActions'), winnerBanner: document.getElementById('winnerBanner')
+  phaseActions: document.getElementById('phaseActions'), winnerBanner: document.getElementById('winnerBanner'),
+  modeGrid: document.getElementById('modeGrid'), modeText: document.getElementById('modeText'), modeStatText: document.getElementById('modeStatText'),
+  timeSettingLabel: document.getElementById('timeSettingLabel'), assetBox: document.getElementById('assetBox'), assetCard: document.getElementById('assetCard'),
+  speakSeconds: document.getElementById('speakSeconds'), targetScore: document.getElementById('targetScore'), passTurnBtn: document.getElementById('passTurnBtn'), playSoundBtn: document.getElementById('playSoundBtn'), clearDrawBtn: document.getElementById('clearDrawBtn')
 };
 els.nameInput.value = localStorage.getItem('iwp-name') || '';
 
+let audioCtx = null;
+let drawCanvas = null;
+let drawCtx = null;
+let drawActive = false;
+let rafTimer = null;
+let lastTimerRender = -1;
+
 function roomRef(code){ return db.ref('imposterWordParty/rooms/' + code); }
-function playerName(){ const n=(els.nameInput.value||'').trim().slice(0,18)||'Player'; localStorage.setItem('iwp-name',n); return n; }
+function playerName(){ const n=(els.nameInput.value||'').trim().slice(0,24)||'Player'; localStorage.setItem('iwp-name',n); return n; }
 function status(t){ els.statusText.textContent=t; }
 function code6(){ const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<6;i++) s+=chars[(Math.random()*chars.length)|0]; return s; }
 function now(){ return Date.now(); }
 function escapeHtml(str){ return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-function defaultPlayer(name,color){ return { id:local.id, name, color, ready:false, score:0, joinedAt:now(), votedFor:'' }; }
-function defaultRoom(){ return { hostId:local.id, phase:'lobby', round:0, targetScore:3, speakSeconds:20, currentTurnIndex:0, turnEndsAt:0, currentSpeakerId:'', imposterId:'', activeSet:null, words:{}, hints:{}, votes:{}, reveal:null, activity:[], players:{} }; }
+function defaultPlayer(name,color){ return { id:local.id, name, color, ready:false, score:0, joinedAt:now(), votedFor:'', lastDraw:'' }; }
+function defaultRoom(){ return { hostId:local.id, phase:'lobby', round:0, targetScore:3, speakSeconds:60, mode:'word', currentTurnIndex:0, turnEndsAt:0, currentSpeakerId:'', imposterId:'', activeSet:null, assets:{}, words:{}, hints:{}, votes:{}, reveal:null, activity:[], players:{} }; }
 function orderedPlayers(data){ return Object.values(data.players||{}).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0)); }
+function modeLabel(mode){ return { word:'Word', picture:'Picture', draw:'Drawing', sound:'Sound' }[mode] || 'Word'; }
+
+function chooseSet(mode){
+  if(mode==='picture') return PICTURE_SETS[(Math.random()*PICTURE_SETS.length)|0];
+  if(mode==='draw') return DRAW_SETS[(Math.random()*DRAW_SETS.length)|0];
+  if(mode==='sound') return SOUND_SETS[(Math.random()*SOUND_SETS.length)|0];
+  return WORD_SETS[(Math.random()*WORD_SETS.length)|0];
+}
+
+function applyModeSelection(mode){
+  local.selectedMode = mode;
+  els.modeText.textContent = modeLabel(mode);
+  els.modeStatText.textContent = modeLabel(mode);
+  els.modeGrid.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+}
+applyModeSelection('word');
+els.timeSettingLabel.textContent = els.speakSeconds.value + 's';
+els.modeGrid.querySelectorAll('.mode-btn').forEach(btn => btn.onclick = () => applyModeSelection(btn.dataset.mode));
+els.speakSeconds.onchange = () => { els.timeSettingLabel.textContent = els.speakSeconds.value + 's'; };
 
 async function createRoom(){
   if(!firebaseReady) return alert('Paste your Firebase config first.');
@@ -454,9 +390,10 @@ async function leaveRoom(removeSelf=true){
     }
   }catch(e){}
   if(local.ref) local.ref.off(); local.room=null; local.roomData=null; local.player=null; local.ref=null; local.isHost=false;
-  els.roomCode.textContent='—'; els.playersList.innerHTML=''; els.scoreboard.innerHTML=''; els.phaseText.textContent='Lobby'; els.roundText.textContent='0'; els.turnText.textContent='—';
-  els.wordLabel.textContent='Join a room to begin'; els.myWord.textContent='—'; els.myHint.style.display='none'; els.myHint.textContent=''; els.voteGrid.innerHTML='';
-  els.revealText.textContent='No round yet'; els.revealMeta.textContent=''; els.activityLog.innerHTML=''; els.phaseActions.innerHTML=''; els.winnerBanner.innerHTML='';
+  document.body.classList.remove('match-view');
+  els.roomCode.textContent='—'; els.playersList.innerHTML=''; els.scoreboard.innerHTML=''; els.phaseText.textContent='Lobby'; els.roundText.textContent='0'; els.turnText.textContent='—'; els.modeStatText.textContent=modeLabel(local.selectedMode);
+  els.wordLabel.textContent='Join a room to begin'; els.myWord.textContent='—'; els.myHint.style.display='none'; els.myHint.textContent=''; els.voteGrid.innerHTML=''; els.assetBox.style.display='none'; els.assetCard.innerHTML='';
+  els.revealText.textContent='No round yet'; els.revealMeta.textContent=''; els.activityLog.innerHTML=''; els.phaseActions.innerHTML=''; els.winnerBanner.innerHTML=''; els.playSoundBtn.style.display='none'; els.clearDrawBtn.style.display='none';
   history.replaceState({},'',location.pathname); status(firebaseReady ? 'Offline' : 'Config required');
 }
 async function copyInvite(){
@@ -466,44 +403,105 @@ ${url.toString()}`); status('Invite copied'); setTimeout(()=>status(local.room ?
 }
 function updateInviteUrl(){ if(!local.room) return; const url=new URL(location.href); url.searchParams.set('room',local.room); history.replaceState({},'',url.toString()); }
 async function toggleReady(){ if(!local.room || !local.player) return; await roomRef(local.room).child('players/' + local.id + '/ready').set(!local.player.ready); }
+
 async function startRound(){
-  if(!local.room || !local.isHost || !local.roomData) return; const players=orderedPlayers(local.roomData);
+  if(!local.room || !local.isHost || !local.roomData) return;
+  const players=orderedPlayers(local.roomData);
   if(players.length<3) return alert('Need at least 3 players.');
   if(players.filter(p=>p.ready).length<players.length) return alert('Everyone needs to be ready.');
-  const set=WORD_SETS[(Math.random()*WORD_SETS.length)|0]; const imposter=players[(Math.random()*players.length)|0]; const words={}, hints={}, playerMap={...(local.roomData.players||{})};
-  players.forEach(p=>{ words[p.id]=p.id===imposter.id ? set.imposter : set.real; hints[p.id]=p.id===imposter.id ? set.hint : ''; playerMap[p.id]={...playerMap[p.id], ready:false, votedFor:''}; });
+  const mode = local.selectedMode;
+  const set = chooseSet(mode);
+  const imposter = players[(Math.random()*players.length)|0];
+  const words={}, hints={}, assets={}, playerMap={...(local.roomData.players||{})};
+  players.forEach(p=>{
+    const isImposter = p.id===imposter.id;
+    if(mode==='picture'){
+      words[p.id] = isImposter ? set.imposter.label : set.real.label;
+      assets[p.id] = isImposter ? set.imposter : set.real;
+      hints[p.id] = isImposter ? set.hint : '';
+    } else if(mode==='draw'){
+      words[p.id] = isImposter ? set.imposter : set.real;
+      assets[p.id] = { type:'draw' };
+      hints[p.id] = isImposter ? set.hint : '';
+    } else if(mode==='sound'){
+      words[p.id] = isImposter ? set.imposter.label : set.real.label;
+      assets[p.id] = isImposter ? set.imposter : set.real;
+      hints[p.id] = isImposter ? set.hint : '';
+    } else {
+      words[p.id] = isImposter ? set.imposter : set.real;
+      assets[p.id] = { type:'word' };
+      hints[p.id] = isImposter ? set.hint : '';
+    }
+    playerMap[p.id] = { ...playerMap[p.id], ready:false, votedFor:'' };
+  });
   const speaker=players[0];
-  await roomRef(local.room).update({ phase:'speaking', round:(local.roomData.round||0)+1, targetScore:3, speakSeconds:20, currentTurnIndex:0, currentSpeakerId:speaker.id, turnEndsAt:now()+20000, imposterId:imposter.id, activeSet:set, words, hints, votes:{}, reveal:null, players:playerMap, activity:[{text:`${speaker.name} starts the clue round.`, ts:now()}] });
+  const speakSeconds=Number(els.speakSeconds.value||60);
+  const targetScore=Number(els.targetScore.value||3);
+  await roomRef(local.room).update({
+    phase:'speaking', round:(local.roomData.round||0)+1, targetScore, speakSeconds, mode,
+    currentTurnIndex:0, currentSpeakerId:speaker.id, turnEndsAt:now()+speakSeconds*1000,
+    imposterId:imposter.id, activeSet:set, assets, words, hints, votes:{}, reveal:null, players:playerMap,
+    activity:[{text:`${speaker.name} starts the clue round in ${modeLabel(mode)} mode.`, ts:now()}]
+  });
 }
+
+async function advanceToNextTurn(force=false){
+  if(!local.isHost || !local.roomData || !local.room) return;
+  const data=local.roomData; const players=orderedPlayers(data); if(!players.length) return;
+  if(data.phase!=='speaking' && !force) return;
+  const nextIndex=(data.currentTurnIndex||0)+1;
+  if(nextIndex<players.length){
+    const nextSpeaker=players[nextIndex];
+    await roomRef(local.room).update({
+      currentTurnIndex:nextIndex,
+      currentSpeakerId:nextSpeaker.id,
+      turnEndsAt:now()+(data.speakSeconds||60)*1000,
+      activity:[...(data.activity||[]).slice(-8), {text:`${nextSpeaker.name}'s turn to speak.`, ts:now()}]
+    });
+  } else {
+    await roomRef(local.room).update({
+      phase:'voting', currentSpeakerId:'', turnEndsAt:0,
+      activity:[...(data.activity||[]).slice(-8), {text:'Voting has started.', ts:now()}]
+    });
+  }
+}
+
+async function passTurn(){
+  if(!local.roomData || local.roomData.phase!=='speaking') return;
+  const canPass = local.isHost || local.roomData.currentSpeakerId === local.id;
+  if(!canPass) return;
+  await advanceToNextTurn(true);
+}
+
 async function maybeAdvanceRound(){
   if(!local.isHost || !local.roomData || !local.room) return; const data=local.roomData; const players=orderedPlayers(data); if(!players.length) return;
-  if(data.phase==='speaking' && data.turnEndsAt && now()>=data.turnEndsAt){
-    const nextIndex=(data.currentTurnIndex||0)+1;
-    if(nextIndex<players.length){
-      const nextSpeaker=players[nextIndex];
-      await roomRef(local.room).update({ currentTurnIndex:nextIndex, currentSpeakerId:nextSpeaker.id, turnEndsAt:now()+20000, activity:[...(data.activity||[]).slice(-8), {text:`${nextSpeaker.name}'s turn to speak.`, ts:now()}] });
-    } else {
-      await roomRef(local.room).update({ phase:'voting', currentSpeakerId:'', turnEndsAt:0, activity:[...(data.activity||[]).slice(-8), {text:'Voting has started.', ts:now()}] });
-    }
-  }
+  if(data.phase==='speaking' && data.turnEndsAt && now()>=data.turnEndsAt) await advanceToNextTurn();
   if(data.phase==='voting'){
     const voteCount=Object.keys(data.votes||{}).length; if(voteCount>=players.length) await resolveVotes();
   }
 }
 async function castVote(targetId){ if(!local.room || !local.player || !local.roomData || local.roomData.phase!=='voting') return; await roomRef(local.room).child('votes/' + local.id).set(targetId); await roomRef(local.room).child('players/' + local.id + '/votedFor').set(targetId); }
 async function resolveVotes(){
-  if(!local.isHost || !local.roomData || !local.room) return; const votes=local.roomData.votes||{}; const tally={}; Object.values(votes).forEach(id=>tally[id]=(tally[id]||0)+1);
+  if(!local.isHost || !local.roomData || !local.room) return;
+  const votes=local.roomData.votes||{}; const tally={}; Object.values(votes).forEach(id=>tally[id]=(tally[id]||0)+1);
   const entries=Object.entries(tally).sort((a,b)=>b[1]-a[1]); const players=local.roomData.players||{}; const guessedId=entries[0]?.[0]||''; const guessedPlayer=players[guessedId]; const imposterId=local.roomData.imposterId; const imposter=players[imposterId]; const playerMap={...players};
   let revealText='', revealMeta='';
-  if(guessedId && guessedId===imposterId){ revealText=`${guessedPlayer?.name || 'The imposter'} was caught!`; revealMeta=`Team scores a point. Secret words were ${local.roomData.activeSet.real} and ${local.roomData.activeSet.imposter}.`; Object.keys(playerMap).forEach(id=>{ if(id!==imposterId) playerMap[id].score=(playerMap[id].score||0)+1; }); }
-  else { revealText=`${imposter?.name || 'The imposter'} escaped!`; revealMeta=`Imposter scores a point. Secret words were ${local.roomData.activeSet.real} and ${local.roomData.activeSet.imposter}.`; if(imposterId) playerMap[imposterId].score=(playerMap[imposterId].score||0)+1; }
-  const winningPlayer=Object.values(playerMap).find(p=>(p.score||0)>=3);
+  if(guessedId && guessedId===imposterId){ revealText=`${guessedPlayer?.name || 'The imposter'} was caught!`; revealMeta=`Team scores a point. The pair was ${readableSet(local.roomData)}.`; Object.keys(playerMap).forEach(id=>{ if(id!==imposterId) playerMap[id].score=(playerMap[id].score||0)+1; }); }
+  else { revealText=`${imposter?.name || 'The imposter'} escaped!`; revealMeta=`Imposter scores a point. The pair was ${readableSet(local.roomData)}.`; if(imposterId) playerMap[imposterId].score=(playerMap[imposterId].score||0)+1; }
+  const winningPlayer=Object.values(playerMap).find(p=>(p.score||0)>=(local.roomData.targetScore||3));
   await roomRef(local.room).update({ phase: winningPlayer ? 'gameover' : 'reveal', reveal:{ guessedId, imposterId, revealText, revealMeta, votes, finishedAt:now(), winnerId:winningPlayer?.id||'' }, players:playerMap, activity:[...(local.roomData.activity||[]).slice(-8), {text:revealText, ts:now()}] });
+}
+function readableSet(data){
+  if(!data?.activeSet) return 'unknown prompts';
+  if(data.mode==='picture') return `${data.activeSet.real.label} and ${data.activeSet.imposter.label}`;
+  if(data.mode==='sound') return `${data.activeSet.real.label} and ${data.activeSet.imposter.label}`;
+  return `${data.activeSet.real} and ${data.activeSet.imposter}`;
 }
 async function nextRound(){
   if(!local.room || !local.isHost || !local.roomData) return; const playerMap={...(local.roomData.players||{})}; Object.keys(playerMap).forEach(id=>playerMap[id]={...playerMap[id], ready:false, votedFor:''});
-  await roomRef(local.room).update({ phase:'lobby', currentTurnIndex:0, turnEndsAt:0, currentSpeakerId:'', imposterId:'', activeSet:null, words:{}, hints:{}, votes:{}, reveal:null, players:playerMap, activity:[{text:'Back to lobby. Ready up for the next round.', ts:now()}] });
+  await roomRef(local.room).update({ phase:'lobby', currentTurnIndex:0, turnEndsAt:0, currentSpeakerId:'', imposterId:'', activeSet:null, assets:{}, words:{}, hints:{}, votes:{}, reveal:null, players:playerMap, activity:[{text:'Back to lobby. Ready up for the next round.', ts:now()}] });
 }
+
 function renderPlayers(data){
   const players=orderedPlayers(data); els.playersList.innerHTML='';
   players.forEach((p,i)=>{
@@ -516,14 +514,49 @@ function renderScores(data){
   const players=orderedPlayers(data).sort((a,b)=>(b.score||0)-(a.score||0)); els.scoreboard.innerHTML='';
   players.forEach((p,i)=>{ const div=document.createElement('div'); div.className='score-item'; div.innerHTML=`<div class="player-meta"><span class="dot" style="background:${p.color || COLORS[i % COLORS.length]}"></span><div style="font-weight:1000">${escapeHtml(p.name)}</div></div><div class="status-pill">${p.score||0}</div>`; els.scoreboard.appendChild(div); });
 }
-function renderWord(data){
-  const myWord=data.words?.[local.id] || '—'; const myHint=data.hints?.[local.id] || '';
-  if(data.phase==='lobby'){ els.wordLabel.textContent='Ready up and start a round'; els.myWord.textContent='—'; els.myHint.style.display='none'; els.myHint.textContent=''; return; }
-  els.wordLabel.textContent='Your secret word'; els.myWord.textContent=myWord; if(myHint){ els.myHint.style.display='inline-block'; els.myHint.textContent='Hint: ' + myHint; } else { els.myHint.style.display='none'; els.myHint.textContent=''; }
+
+function renderAsset(data){
+  const mode = data.mode || 'word';
+  const asset = data.assets?.[local.id];
+  els.assetBox.style.display = 'none';
+  els.assetCard.innerHTML = '';
+  els.playSoundBtn.style.display = 'none';
+  els.clearDrawBtn.style.display = 'none';
+  if(data.phase==='lobby') return;
+
+  if(mode==='picture' && asset){
+    els.assetBox.style.display = 'flex';
+    els.assetCard.innerHTML = `<div class="picture-display">${escapeHtml(asset.icon)}</div><div class="picture-caption">${escapeHtml(asset.label)}</div>`;
+  } else if(mode==='draw'){
+    els.assetBox.style.display = 'flex';
+    els.assetCard.innerHTML = `<div class="draw-wrap"><div class="small" style="text-align:center">Draw your prompt below. Your drawing stays on your device.</div><div class="draw-toolbar"><button class="secondary" id="thinBrushBtn">Thin</button><button class="secondary" id="thickBrushBtn">Thick</button></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="320"></canvas></div>`;
+    setupDrawingCanvas();
+    els.clearDrawBtn.style.display = 'inline-flex';
+  } else if(mode==='sound' && asset){
+    els.assetBox.style.display = 'flex';
+    els.assetCard.innerHTML = `<div class="audio-controls"><button class="primary" id="assetPlayBtn">▶ Play Clip</button></div><div class="picture-caption">${escapeHtml(asset.label)}</div>`;
+    document.getElementById('assetPlayBtn').onclick = () => playPreset(asset.preset);
+    els.playSoundBtn.style.display = 'inline-flex';
+  }
 }
-function renderTimer(data){ if(data.phase!=='speaking' || !data.turnEndsAt){ els.timerText.textContent='0'; return; } els.timerText.textContent=Math.max(0, Math.ceil((data.turnEndsAt-now())/1000)); }
+
+function renderWord(data){
+  const mode = data.mode || 'word';
+  const myWord=data.words?.[local.id] || '—'; const myHint=data.hints?.[local.id] || '';
+  if(data.phase==='lobby'){ els.wordLabel.textContent='Ready up and start a round'; els.myWord.textContent='—'; els.myHint.style.display='none'; els.myHint.textContent=''; renderAsset(data); return; }
+  els.wordLabel.textContent = mode==='draw' ? 'Your drawing prompt' : mode==='sound' ? 'Your sound clue' : mode==='picture' ? 'Your picture prompt' : 'Your secret word';
+  els.myWord.textContent=myWord;
+  if(myHint){ els.myHint.style.display='inline-block'; els.myHint.textContent='Hint: ' + myHint; } else { els.myHint.style.display='none'; els.myHint.textContent=''; }
+  renderAsset(data);
+}
+function renderTimer(data){
+  if(data.phase!=='speaking' || !data.turnEndsAt){ if(lastTimerRender!==0){ els.timerText.textContent='0'; lastTimerRender=0; } return; }
+  const seconds=Math.max(0, Math.ceil((data.turnEndsAt-now())/1000));
+  if(seconds!==lastTimerRender){ els.timerText.textContent=seconds; lastTimerRender=seconds; }
+}
 function renderVotes(data){
-  els.voteGrid.innerHTML=''; if(data.phase!=='voting') return; orderedPlayers(data).forEach(p=>{ const btn=document.createElement('button'); btn.className='vote-btn'; btn.innerHTML=`<div>${escapeHtml(p.name)}</div><div class="small">Vote this player</div>`; btn.onclick=()=>castVote(p.id); els.voteGrid.appendChild(btn); });
+  els.voteGrid.innerHTML=''; if(data.phase!=='voting') return;
+  orderedPlayers(data).forEach(p=>{ const btn=document.createElement('button'); btn.className='vote-btn'; btn.innerHTML=`<div>${escapeHtml(p.name)}</div><div class="small">Vote this player</div>`; btn.onclick=()=>castVote(p.id); els.voteGrid.appendChild(btn); });
 }
 function renderReveal(data){
   if(!data.reveal){ els.revealText.textContent='No round yet'; els.revealMeta.textContent=''; els.winnerBanner.innerHTML=''; return; }
@@ -531,18 +564,95 @@ function renderReveal(data){
   if(data.phase==='gameover' && data.reveal.winnerId){ const winner=data.players?.[data.reveal.winnerId]; els.winnerBanner.innerHTML=`<div class="winner-banner">🏆 ${winner ? escapeHtml(winner.name) : 'Someone'} wins the match!</div>`; } else { els.winnerBanner.innerHTML=''; }
 }
 function renderActions(data){
-  els.phaseActions.innerHTML=''; const makeBtn=(text, cls, fn)=>{ const b=document.createElement('button'); b.className=cls; b.textContent=text; b.onclick=fn; els.phaseActions.appendChild(b); };
+  els.phaseActions.innerHTML='';
+  const makeBtn=(text, cls, fn)=>{ const b=document.createElement('button'); b.className=cls; b.textContent=text; b.onclick=fn; els.phaseActions.appendChild(b); };
   if(!local.room) return;
   if(data.phase==='lobby'){ makeBtn(local.player?.ready ? 'Unready' : 'Ready Up', local.player?.ready ? 'secondary' : 'good', toggleReady); if(local.isHost) makeBtn('Start Round', 'primary', startRound); }
   else if(data.phase==='voting'){ makeBtn('Vote below', 'secondary', ()=>{}); }
   else if(data.phase==='reveal' || data.phase==='gameover'){ if(local.isHost) makeBtn(data.phase==='gameover' ? 'New Match' : 'Next Round', 'primary', nextRound); }
 }
-function renderActivity(data){ els.activityLog.innerHTML=''; (data.activity||[]).slice().reverse().forEach(item=>{ const div=document.createElement('div'); div.className='log-item'; div.textContent=item.text; els.activityLog.appendChild(div); }); }
-function updateUI(){ const data=local.roomData; if(!data) return; els.phaseText.textContent=(data.phase||'lobby').replace(/^./,m=>m.toUpperCase()); els.roundText.textContent=String(data.round||0); els.turnText.textContent=data.players?.[data.currentSpeakerId]?.name || '—'; els.speakerName.textContent=data.players?.[data.currentSpeakerId]?.name || 'Nobody yet'; renderPlayers(data); renderScores(data); renderWord(data); renderTimer(data); renderVotes(data); renderReveal(data); renderActions(data); renderActivity(data); }
+function renderActivity(data){
+  els.activityLog.innerHTML='';
+  (data.activity||[]).slice().reverse().forEach(item=>{ const div=document.createElement('div'); div.className='log-item'; div.textContent=item.text; els.activityLog.appendChild(div); });
+}
+function updateMatchView(data){
+  if(data.phase==='lobby') document.body.classList.remove('match-view');
+  else document.body.classList.add('match-view');
+}
+function updateUI(){
+  const data=local.roomData; if(!data) return;
+  updateMatchView(data);
+  els.phaseText.textContent=(data.phase||'lobby').replace(/^./,m=>m.toUpperCase());
+  els.roundText.textContent=String(data.round||0);
+  els.turnText.textContent=data.players?.[data.currentSpeakerId]?.name || '—';
+  els.speakerName.textContent=data.players?.[data.currentSpeakerId]?.name || 'Nobody yet';
+  els.modeText.textContent = modeLabel(data.mode || local.selectedMode);
+  els.modeStatText.textContent = modeLabel(data.mode || local.selectedMode);
+  if(data.mode) applyModeSelection(data.mode);
+  renderPlayers(data); renderScores(data); renderWord(data); renderVotes(data); renderReveal(data); renderActions(data); renderActivity(data);
+  els.passTurnBtn.style.display = data.phase==='speaking' ? 'inline-flex' : 'none';
+}
 function primeQueryRoom(){ const room=new URL(location.href).searchParams.get('room'); if(room) els.roomInput.value=room.toUpperCase(); }
-setInterval(()=>{ if(local.roomData?.phase==='speaking'){ renderTimer(local.roomData); maybeAdvanceRound(); } },500);
-document.getElementById('createBtn').onclick=createRoom; document.getElementById('joinBtn').onclick=()=>joinRoom(); document.getElementById('copyBtn').onclick=copyInvite; document.getElementById('readyBtn').onclick=toggleReady; document.getElementById('startBtn').onclick=startRound; document.getElementById('leaveBtn').onclick=()=>leaveRoom(true);
-primeQueryRoom(); if(!firebaseReady) status('Config required');
+
+function startTimerLoop(){
+  if(rafTimer) cancelAnimationFrame(rafTimer);
+  const tick = () => {
+    if(local.roomData?.phase==='speaking'){ renderTimer(local.roomData); maybeAdvanceRound(); }
+    rafTimer = requestAnimationFrame(tick);
+  };
+  rafTimer = requestAnimationFrame(tick);
+}
+
+function ensureAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+function tone(ctx, freq, type, start, dur, gain=0.05){ const osc=ctx.createOscillator(); const g=ctx.createGain(); osc.type=type; osc.frequency.value=freq; g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(gain,start+0.02); g.gain.exponentialRampToValueAtTime(0.0001,start+dur); osc.connect(g).connect(ctx.destination); osc.start(start); osc.stop(start+dur+0.02); }
+function playPreset(preset){
+  const ctx = ensureAudio(); const t=ctx.currentTime+0.02;
+  const patterns = {
+    bellA:()=>{ tone(ctx,880,'sine',t,.35,.06); tone(ctx,1320,'sine',t+.04,.28,.03); },
+    bellB:()=>{ tone(ctx,740,'triangle',t,.28,.05); tone(ctx,1110,'triangle',t+.03,.22,.025); },
+    humA:()=>{ tone(ctx,110,'sawtooth',t,.9,.03); tone(ctx,220,'sine',t,.9,.015); },
+    humB:()=>{ tone(ctx,140,'triangle',t,.9,.03); tone(ctx,280,'sine',t,.9,.012); },
+    chirpA:()=>{ [880,990,1200].forEach((f,i)=>tone(ctx,f,'sine',t+i*.12,.09,.045)); },
+    chirpB:()=>{ [620,700,760,700].forEach((f,i)=>tone(ctx,f,'triangle',t+i*.1,.06,.035)); },
+    beepA:()=>{ [740,880].forEach((f,i)=>tone(ctx,f,'square',t+i*.16,.08,.03)); },
+    beepB:()=>{ [660,540].forEach((f,i)=>tone(ctx,f,'square',t+i*.14,.08,.03)); },
+    tapA:()=>{ [220,220,220].forEach((f,i)=>tone(ctx,f,'square',t+i*.12,.03,.02)); },
+    tapB:()=>{ [260,180,260].forEach((f,i)=>tone(ctx,f,'square',t+i*.12,.03,.02)); },
+    alarmA:()=>{ [520,680,520].forEach((f,i)=>tone(ctx,f,'triangle',t+i*.18,.12,.03)); },
+    alarmB:()=>{ [660,660,520].forEach((f,i)=>tone(ctx,f,'triangle',t+i*.15,.1,.03)); }
+  };
+  if(patterns[preset]) patterns[preset]();
+}
+
+function setupDrawingCanvas(){
+  drawCanvas = document.getElementById('drawCanvas'); if(!drawCanvas) return;
+  drawCtx = drawCanvas.getContext('2d', { alpha:false, desynchronized:true });
+  drawCtx.fillStyle = '#ffffff'; drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
+  drawCtx.lineCap = 'round'; drawCtx.lineJoin = 'round'; drawCtx.strokeStyle = '#5f2db0'; drawCtx.lineWidth = 4;
+  const pos = e => { const r=drawCanvas.getBoundingClientRect(); const p = e.touches ? e.touches[0] : e; return { x:(p.clientX-r.left)*(drawCanvas.width/r.width), y:(p.clientY-r.top)*(drawCanvas.height/r.height) }; };
+  const start = e => { drawActive = true; const p=pos(e); drawCtx.beginPath(); drawCtx.moveTo(p.x,p.y); e.preventDefault(); };
+  const move = e => { if(!drawActive) return; const p=pos(e); drawCtx.lineTo(p.x,p.y); drawCtx.stroke(); e.preventDefault(); };
+  const end = () => { drawActive = false; };
+  drawCanvas.onpointerdown = start; drawCanvas.onpointermove = move; window.onpointerup = end;
+  document.getElementById('thinBrushBtn').onclick = () => { if(drawCtx) drawCtx.lineWidth = 4; };
+  document.getElementById('thickBrushBtn').onclick = () => { if(drawCtx) drawCtx.lineWidth = 10; };
+}
+function clearDrawing(){ if(drawCtx && drawCanvas){ drawCtx.fillStyle = '#ffffff'; drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height); drawCtx.strokeStyle = '#5f2db0'; } }
+
+els.passTurnBtn.onclick = passTurn;
+els.playSoundBtn.onclick = () => { const preset = local.roomData?.assets?.[local.id]?.preset; if(preset) playPreset(preset); };
+els.clearDrawBtn.onclick = clearDrawing;
+
+document.getElementById('createBtn').onclick=createRoom;
+document.getElementById('joinBtn').onclick=()=>joinRoom();
+document.getElementById('copyBtn').onclick=copyInvite;
+document.getElementById('readyBtn').onclick=toggleReady;
+document.getElementById('startBtn').onclick=startRound;
+document.getElementById('leaveBtn').onclick=()=>leaveRoom(true);
+
+primeQueryRoom();
+startTimerLoop();
+if(!firebaseReady) status('Config required');
 </script>
 </body>
 </html>
