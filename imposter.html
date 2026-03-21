@@ -226,7 +226,7 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
           <div class="panel speaker-card">
             <div class="section-title">Speaking turn</div>
             <div class="speaker-name" id="speakerName">Nobody yet</div>
-            <div class="small">Give one clue that fits your prompt without saying it directly. The host or current speaker can pass the turn.</div>
+            <div class="small">Give one clue that fits your prompt without saying it directly. The current speaker can pass their turn, and the host can move the round along if needed.</div>
             <div class="timer" id="timerText">0</div>
             <div class="btn-row" style="justify-content:center"><button id="passTurnBtn" class="secondary">Pass Turn</button><button id="playSoundBtn" class="secondary hidden">Play My Sound</button><button id="clearDrawBtn" class="secondary hidden">Clear Drawing</button></div>
             <div class="section-title" style="margin-top:10px">Voting</div>
@@ -2418,7 +2418,6 @@ function buildSecretHint(word, genre, mode, baseHint=''){
   const words = tokens.length || 1;
   const chars = clean.replace(/\s+/g,'').length || clean.length || 0;
   const pieces = [];
-  if(genre) pieces.push(`Genre: ${genre}`);
   if(baseHint) pieces.push(baseHint);
   if(clean){
     pieces.push(`Starts with ${first}`);
@@ -2428,6 +2427,10 @@ function buildSecretHint(word, genre, mode, baseHint=''){
   if(mode === 'sound') pieces.push('Use sound clues, not the exact title');
   if(mode === 'picture') pieces.push('Describe the image without naming it');
   return pieces.join(' • ');
+}
+
+function canEditDrawing(){
+  return !!(local.room && local.publicData?.mode === 'draw' && local.publicData?.phase === 'speaking');
 }
 
 function chooseWordGenreSet(){
@@ -2923,7 +2926,8 @@ function renderWord(data){
     ? `Your picture prompt${genre ? ' • Genre: ' + genre : ''}`
     : `Your secret word${genre ? ' • Genre: ' + genre : ''}`;
   els.myWord.textContent = secret?.word || 'Loading…';
-  const hintText = [secret?.isImposter ? 'You are the imposter' : 'You are not the imposter', secret?.hint || (genre ? 'Genre: ' + genre : '')].filter(Boolean).join(' • ');
+  const roleText = secret?.isImposter ? 'You are the imposter' : 'You are not the imposter';
+  const hintText = [roleText, secret?.hint].filter(Boolean).join(' • ');
   if(hintText){
     els.myHint.style.display = 'inline-block';
     els.myHint.textContent = hintText;
@@ -3082,7 +3086,11 @@ function updateUI(){
   els.speakerName.textContent = data.players?.[data.currentSpeakerUid]?.name || 'Nobody yet';
   els.modeText.textContent = modeLabel(data.mode || local.selectedMode); els.modeStatText.textContent = modeLabel(data.mode || local.selectedMode);
   renderPlayers(data); renderScores(data); renderWord(data); renderVotes(data); renderReveal(data); renderActions(data); renderActivity(data); renderLiveDrawings(data);
+  const canPassNow = data.phase === 'speaking' && (local.isHost || data.currentSpeakerUid === local.uid);
   els.passTurnBtn.classList.toggle('hidden', data.phase !== 'speaking');
+  els.passTurnBtn.disabled = !canPassNow;
+  els.passTurnBtn.textContent = data.currentSpeakerUid === local.uid ? 'Pass Turn' : 'Host Pass Turn';
+  els.clearDrawBtn.disabled = !canEditDrawing();
 }
 
 function startTimerLoop(){ if(rafTimer) cancelAnimationFrame(rafTimer); const tick = () => { if(local.publicData?.phase === 'speaking'){ renderTimer(local.publicData); maybeAdvanceRound(); } rafTimer=requestAnimationFrame(tick); }; rafTimer=requestAnimationFrame(tick); }
@@ -3096,10 +3104,14 @@ function updateDrawToolbarState(){
   const eraserBtn = document.getElementById('eraserToolBtn');
   const thinBtn = document.getElementById('thinBrushBtn');
   const thickBtn = document.getElementById('thickBrushBtn');
-  if(penBtn) penBtn.classList.toggle('active', local.currentTool === 'pen');
-  if(eraserBtn) eraserBtn.classList.toggle('active', local.currentTool === 'eraser');
-  if(thinBtn) thinBtn.classList.toggle('active', Number(local.currentBrush || 4) === 4);
-  if(thickBtn) thickBtn.classList.toggle('active', Number(local.currentBrush || 4) === 10);
+  const confirmBtn = document.getElementById('confirmDrawingBtn');
+  const editable = canEditDrawing();
+  if(penBtn) { penBtn.classList.toggle('active', local.currentTool === 'pen'); penBtn.disabled = !editable; }
+  if(eraserBtn) { eraserBtn.classList.toggle('active', local.currentTool === 'eraser'); eraserBtn.disabled = !editable; }
+  if(thinBtn) { thinBtn.classList.toggle('active', Number(local.currentBrush || 4) === 4); thinBtn.disabled = !editable; }
+  if(thickBtn) { thickBtn.classList.toggle('active', Number(local.currentBrush || 4) === 10); thickBtn.disabled = !editable; }
+  if(confirmBtn) confirmBtn.disabled = !editable;
+  if(drawCanvas) drawCanvas.style.pointerEvents = editable ? 'auto' : 'none';
 }
 
 function setBrush(tool=local.currentTool, width=local.currentBrush){
@@ -3151,7 +3163,7 @@ function setupDrawingCanvas(){
   };
 
   const beginStroke = e => {
-    if(!drawCtx) return;
+    if(!drawCtx || !canEditDrawing()) return;
     drawActive = true;
     const p = pos(e);
     drawCtx.beginPath();
@@ -3165,7 +3177,7 @@ function setupDrawingCanvas(){
   };
 
   const moveStroke = e => {
-    if(!drawActive || !drawCtx) return;
+    if(!drawActive || !drawCtx || !canEditDrawing()) return;
     const p = pos(e);
     drawCtx.lineTo(p.x, p.y);
     drawCtx.stroke();
@@ -3223,7 +3235,7 @@ function loadDrawingIntoCanvas(imageData, updatedAt=0){
   img.src = imageData;
 }
 async function confirmDrawing(){
-  if(!local.room || !drawCanvas || local.publicData?.mode !== 'draw') return;
+  if(!canEditDrawing() || !drawCanvas) return;
   const n = now();
   local.lastDrawUpload = n;
   lastLoadedDrawingAt = Math.max(lastLoadedDrawingAt, n);
@@ -3237,6 +3249,7 @@ async function confirmDrawing(){
 }
 
 function clearDrawing(){
+  if(!canEditDrawing()) return;
   if(drawCtx && drawCanvas){
     drawCtx.fillStyle='#ffffff';
     drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
