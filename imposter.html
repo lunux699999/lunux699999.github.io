@@ -45,8 +45,11 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
 .players-grid,.score-list,.log,.drawings-grid{display:grid;gap:10px}.player-item,.score-item,.log-item,.drawing-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18)}.player-meta{display:flex;align-items:center;gap:10px}.dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.85)}.tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:1000}.t-ready{background:rgba(95,246,229,.18);color:#8bfff2}.t-turn{background:rgba(255,226,122,.18);color:#fff2b6}.t-voted{background:rgba(95,210,255,.18);color:#c7f0ff}.t-host{background:rgba(255,135,192,.18);color:#ffd3e9}
 .speaker-card{text-align:center;display:grid;gap:10px}.speaker-name{font-size:34px;font-weight:1000;text-shadow:0 2px 0 rgba(49,0,77,.35)}.timer{font-size:68px;font-weight:1000;line-height:1;color:var(--teal)}.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vote-btn{width:100%;text-align:left;background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.2)}.vote-btn.is-self{opacity:.6}
 .reveal-big{font-size:clamp(28px,4vw,48px);font-weight:1000;line-height:1.08;text-shadow:0 2px 0 rgba(49,0,77,.35)}.winner-banner{margin-top:12px;padding:16px;border-radius:18px;background:rgba(255,226,122,.18);border:2px solid rgba(255,226,122,.34);font-size:24px;font-weight:1000;text-align:center}
-.hidden{display:none !important}.banner{padding:12px 14px;border-radius:16px;border:2px solid rgba(255,255,255,.24);background:rgba(255,255,255,.12);font-weight:900}.banner.warn{background:rgba(255,226,122,.18);border-color:rgba(255,226,122,.34)}.banner.ok{background:rgba(95,246,229,.16);border-color:rgba(95,246,229,.28)}
-.draw-wrap{display:grid;gap:12px}.draw-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.draw-canvas{width:100%;height:320px;background:#fff;border-radius:18px;border:3px solid rgba(255,255,255,.24);cursor:crosshair;touch-action:none}.drawing-thumb{width:100%;max-width:180px;aspect-ratio:2/1;border-radius:14px;background:#fff;object-fit:cover;border:3px solid rgba(255,255,255,.2)}.drawing-item{align-items:flex-start}.drawing-meta{display:grid;gap:6px}
+.hidden{display:none !important}.banner{padding:12px 14px;border-radius:16px;border:2px solid rgba(255,255,255,.24);background:rgba(255,255,255,.12);font-weight:900}.banner.warn{background:rgba(255,226,122,.18);border-color:rgba(255,226,122,.34)}.banner.ok{background:rgba(95,246,229,.16);border-color:rgba(95,246,229,.28)}.view{opacity:1;transform:translateY(0) scale(1);transition:opacity .38s ease,transform .38s ease}.view.hidden{display:none !important}.view.entering{opacity:0;transform:translateY(22px) scale(.985)}
+.game-shell{display:grid;gap:18px}.match-header{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:stretch}.match-hero{padding:20px 22px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border:2px solid rgba(255,255,255,.22);box-shadow:var(--shadow)}.match-kicker{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:1000;color:var(--teal)}.match-title{font-size:clamp(30px,4vw,52px);line-height:1;font-weight:1000;margin-top:8px;text-shadow:0 3px 0 rgba(49,0,77,.28)}.match-sub{margin-top:10px;font-size:15px;color:#fff;max-width:60ch;line-height:1.45}.match-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.round-banner{padding:18px 20px;border-radius:26px;background:linear-gradient(180deg,rgba(95,246,229,.18),rgba(95,210,255,.14));border:2px solid rgba(95,246,229,.28);display:grid;gap:8px;align-content:center}.round-banner .label{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:1000;color:#d5fffa}.round-banner .headline{font-size:clamp(24px,3vw,40px);font-weight:1000;line-height:1.05}.round-banner .subline{font-size:14px;color:#fff}
+.page-flash{animation:pageFlash .5s ease}
+@keyframes pageFlash{0%{opacity:0;transform:translateY(18px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.draw-wrap{display:grid;gap:12px}.draw-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.draw-canvas{display:block;width:100%;height:auto;max-height:420px;aspect-ratio:2/1;background:#fff;border-radius:18px;border:3px solid rgba(255,255,255,.24);cursor:crosshair;touch-action:none}.drawing-thumb-wrap{width:100%;max-width:320px;aspect-ratio:2/1;border-radius:16px;background:#fff;border:3px solid rgba(255,255,255,.2);overflow:hidden;display:grid;place-items:center}.drawing-thumb{width:100%;height:100%;object-fit:contain;background:#fff}.drawing-placeholder{width:100%;height:100%;display:grid;place-items:center;color:#6d5a93;font-weight:900}.drawing-item{align-items:flex-start}.drawing-meta{display:grid;gap:6px} .lobby-note{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.16)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-6px) rotate(-1deg)}}@keyframes twinkle{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.15);opacity:1}}@keyframes blink{0%,45%,100%{transform:scaleY(1)}48%,52%{transform:scaleY(.1)}}
 @media (max-width:1000px){.setup-grid,.game-grid{grid-template-columns:1fr}.hero-inner{grid-template-columns:1fr;justify-items:center;text-align:center}.status-grid,.vote-grid,.mode-grid{grid-template-columns:1fr}.streamers{justify-items:start}.avatar-picker{grid-template-columns:repeat(5,1fr)}}
 </style>
@@ -79,7 +82,7 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
 
     <div id="authBanner" class="banner warn">Connecting…</div>
 
-    <section id="setupView" class="grid" style="margin-top:18px">
+    <section id="setupView" class="grid view" style="margin-top:18px">
       <div class="setup-grid">
         <div class="left-col">
           <div class="panel hero-panel">
@@ -112,17 +115,41 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
             <div class="btn-row" style="margin-top:12px"><select id="speakSeconds" style="max-width:180px"><option value="20">20 sec</option><option value="30">30 sec</option><option value="45">45 sec</option><option value="60" selected>60 sec</option></select><select id="targetScore" style="max-width:180px"><option value="3" selected>3 points</option><option value="5">5 points</option><option value="7">7 points</option></select></div>
           </div>
           <div class="setup-card">
-            <div class="section-title">New version</div>
+            <div class="section-title">How this version is better</div>
             <div class="small" style="font-size:15px;color:#fff;line-height:1.55">
-              New version
+              The match now switches to a dedicated game screen when the round starts. Drawing mode syncs live so everyone can see sketches as they happen. Players use Firebase anonymous auth instead of random local IDs, and prompts are stored privately per player instead of inside the public room state.
             </div>
+          </div>
+          <div class="setup-card">
+            <div class="section-title">Lobby players</div>
+            <div id="setupPlayersList" class="players-grid"></div>
+            <div class="section-title" style="margin-top:14px">Lobby scoreboard</div>
+            <div id="setupScoreboard" class="score-list"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="gameView" class="hidden" style="margin-top:18px">
-      <div class="game-grid">
+    <section id="gameView" class="hidden view" style="margin-top:18px">
+      <div class="game-shell">
+        <div class="match-header">
+          <div class="match-hero">
+            <div class="match-kicker">Match in progress</div>
+            <div class="match-title" id="matchTitle">Imposter Party</div>
+            <div class="match-sub" id="matchSub">The lobby is tucked away while the round is live. Focus on clues, live drawings, votes, and reveals.</div>
+            <div class="match-pills">
+              <div class="pill">Room: <strong id="gameRoomCode">—</strong></div>
+              <div class="pill">First to <strong id="targetScoreLabel">3</strong></div>
+              <div class="pill">Turn timer <strong id="speakTimeGameLabel">60s</strong></div>
+            </div>
+          </div>
+          <div class="round-banner" id="roundBanner">
+            <div class="label">Round status</div>
+            <div class="headline" id="roundBannerHeadline">Waiting for the next move</div>
+            <div class="subline" id="roundBannerSubline">Clues, drawings, and votes update here as the match unfolds.</div>
+          </div>
+        </div>
+        <div class="game-grid">
         <div class="left-col">
           <div class="word-panel">
             <div class="word-label" id="wordLabel">Join a room to begin</div>
@@ -156,6 +183,7 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
           <div class="list-card"><div class="section-title">Scoreboard</div><div id="scoreboard" class="score-list"></div></div>
           <div class="drawings-card hidden" id="drawingsCard"><div class="section-title">Live drawings</div><div class="small" style="margin-bottom:10px">Everyone can watch sketches appear in real time.</div><div id="drawingsGrid" class="drawings-grid"></div></div>
           <div class="reveal-card"><div class="section-title">Round reveal</div><div class="reveal-big" id="revealText">No round yet</div><div class="small" id="revealMeta" style="margin-top:8px"></div><div id="winnerBanner"></div><div class="section-title" style="margin-top:16px">Activity</div><div id="activityLog" class="log"></div></div>
+        </div>
         </div>
       </div>
     </section>
@@ -232,7 +260,7 @@ const local = {
 const els = {
   authBanner: document.getElementById('authBanner'), setupView: document.getElementById('setupView'), gameView: document.getElementById('gameView'),
   nameInput: document.getElementById('nameInput'), roomInput: document.getElementById('roomInput'), roomCode: document.getElementById('roomCode'),
-  statusText: document.getElementById('statusText'), playersList: document.getElementById('playersList'), scoreboard: document.getElementById('scoreboard'),
+  statusText: document.getElementById('statusText'), playersList: document.getElementById('playersList'), scoreboard: document.getElementById('scoreboard'), setupPlayersList: document.getElementById('setupPlayersList'), setupScoreboard: document.getElementById('setupScoreboard'),
   phaseText: document.getElementById('phaseText'), roundText: document.getElementById('roundText'), turnText: document.getElementById('turnText'),
   wordLabel: document.getElementById('wordLabel'), myWord: document.getElementById('myWord'), myHint: document.getElementById('myHint'),
   speakerName: document.getElementById('speakerName'), timerText: document.getElementById('timerText'), voteGrid: document.getElementById('voteGrid'),
@@ -241,11 +269,11 @@ const els = {
   modeText: document.getElementById('modeText'), modeStatText: document.getElementById('modeStatText'), timeSettingLabel: document.getElementById('timeSettingLabel'),
   assetBox: document.getElementById('assetBox'), assetCard: document.getElementById('assetCard'), speakSeconds: document.getElementById('speakSeconds'),
   targetScore: document.getElementById('targetScore'), passTurnBtn: document.getElementById('passTurnBtn'), playSoundBtn: document.getElementById('playSoundBtn'), clearDrawBtn: document.getElementById('clearDrawBtn'),
-  drawingsCard: document.getElementById('drawingsCard'), drawingsGrid: document.getElementById('drawingsGrid'), avatarPicker: document.getElementById('avatarPicker')
+  drawingsCard: document.getElementById('drawingsCard'), drawingsGrid: document.getElementById('drawingsGrid'), avatarPicker: document.getElementById('avatarPicker'), gameRoomCode: document.getElementById('gameRoomCode'), targetScoreLabel: document.getElementById('targetScoreLabel'), speakTimeGameLabel: document.getElementById('speakTimeGameLabel'), matchTitle: document.getElementById('matchTitle'), matchSub: document.getElementById('matchSub'), roundBannerHeadline: document.getElementById('roundBannerHeadline'), roundBannerSubline: document.getElementById('roundBannerSubline')
 };
 els.nameInput.value = localStorage.getItem('iwp-name') || '';
 
-let audioCtx = null, drawCanvas = null, drawCtx = null, drawActive = false, rafTimer = null, lastTimerRender = -1, drawSyncTimer = null;
+let audioCtx = null, drawCanvas = null, drawCtx = null, drawActive = false, rafTimer = null, lastTimerRender = -1, drawSyncTimer = null, drawListenersBound = false;
 
 function roomBase(code){ return db.ref('imposterPartySecure/rooms/' + code); }
 function publicRef(code){ return roomBase(code).child('public'); }
@@ -465,35 +493,105 @@ async function nextRound(){
   await db.ref().update(rootUpdates);
 }
 
+function animateViewSwap(next){
+  next.classList.remove('hidden');
+  next.classList.add('entering');
+  requestAnimationFrame(() => {
+    next.classList.add('page-flash');
+    next.classList.remove('entering');
+    setTimeout(() => next.classList.remove('page-flash'), 520);
+  });
+}
+function updateGameHeader(data){
+  if(!data) return;
+  if(els.gameRoomCode) els.gameRoomCode.textContent = local.room || '—';
+  if(els.targetScoreLabel) els.targetScoreLabel.textContent = String(data.targetScore || 3);
+  if(els.speakTimeGameLabel) els.speakTimeGameLabel.textContent = String(data.speakSeconds || 60) + 's';
+  const speaker = data.players?.[data.currentSpeakerUid]?.name || 'Nobody';
+  const phaseTitle = { speaking:'Clue time', voting:'Voting time', reveal:'Round reveal', gameover:'Match complete', lobby:'Lobby' }[data.phase || 'lobby'];
+  if(els.matchTitle) els.matchTitle.textContent = `${phaseTitle} • ${modeLabel(data.mode || local.selectedMode)} mode`;
+  if(els.matchSub) els.matchSub.textContent = data.phase === 'speaking'
+    ? `${speaker} is up. Keep setup controls out of sight and focus on the round.`
+    : data.phase === 'voting'
+    ? 'Everyone has spoken. Vote for the player with the different prompt.'
+    : data.phase === 'reveal'
+    ? 'The round has been resolved. Check the reveal and scoreboard before the next round.'
+    : data.phase === 'gameover'
+    ? 'The match has a winner. Start a new match from the reveal controls when you are ready.'
+    : 'Get ready for the next round.';
+  if(els.roundBannerHeadline) els.roundBannerHeadline.textContent = data.phase === 'speaking'
+    ? `Round ${data.round || 0} — ${speaker}'s turn`
+    : data.phase === 'voting'
+    ? `Round ${data.round || 0} — Cast your vote`
+    : data.phase === 'reveal'
+    ? `Round ${data.round || 0} — Reveal`
+    : data.phase === 'gameover'
+    ? 'Game over'
+    : 'Lobby';
+  if(els.roundBannerSubline) els.roundBannerSubline.textContent = data.phase === 'speaking'
+    ? `Timer: ${data.speakSeconds || 60}s per turn. Pass if you need to move faster.`
+    : data.phase === 'voting'
+    ? `${Object.keys(data.votes || {}).length} / ${orderedPlayers(data).length} votes in.`
+    : data.phase === 'reveal'
+    ? (data.reveal?.revealText || 'See who got caught and who scored.')
+    : data.phase === 'gameover'
+    ? (data.reveal?.winnerUid ? `${data.players?.[data.reveal.winnerUid]?.name || 'A player'} reached the target score.` : 'A winner has been decided.')
+    : 'Ready up to begin.';
+}
+
 function updateViewMode(data){
   const inMatch = isMatchPhase(data?.phase);
-  els.setupView.classList.toggle('hidden', inMatch);
-  els.gameView.classList.toggle('hidden', !inMatch && !!local.room ? false : !inMatch); // keep game visible when joined? simplified below
-  if(!local.room) { els.gameView.classList.add('hidden'); els.setupView.classList.remove('hidden'); return; }
-  if(inMatch){ els.setupView.classList.add('hidden'); els.gameView.classList.remove('hidden'); }
-  else { els.setupView.classList.remove('hidden'); els.gameView.classList.add('hidden'); }
+  if(!local.room){
+    local.lastViewMode = 'setup';
+    els.setupView.classList.remove('hidden');
+    els.gameView.classList.add('hidden');
+    return;
+  }
+  if(inMatch){
+    if(local.lastViewMode !== 'game'){
+      els.setupView.classList.add('hidden');
+      animateViewSwap(els.gameView);
+      local.lastViewMode = 'game';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      els.setupView.classList.add('hidden');
+      els.gameView.classList.remove('hidden');
+    }
+  } else {
+    if(local.lastViewMode !== 'setup'){
+      els.gameView.classList.add('hidden');
+      animateViewSwap(els.setupView);
+      local.lastViewMode = 'setup';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      els.setupView.classList.remove('hidden');
+      els.gameView.classList.add('hidden');
+    }
+  }
 }
 
 function renderPlayers(data){
-  els.playersList.innerHTML='';
+  if(els.playersList) els.playersList.innerHTML='';
+  if(els.setupPlayersList) els.setupPlayersList.innerHTML='';
   orderedPlayers(data).forEach((p, i) => {
     const badges = [];
     if(data.hostUid === p.uid) badges.push('<span class="tag t-host">Host</span>');
     if(p.ready) badges.push('<span class="tag t-ready">Ready</span>');
     if(data.currentSpeakerUid === p.uid) badges.push('<span class="tag t-turn">Turn</span>');
     if(data.phase === 'voting' && p.votedFor) badges.push('<span class="tag t-voted">Voted</span>');
-    const div = document.createElement('div'); div.className = 'player-item';
-    div.innerHTML = `<div class="player-meta"><span class="dot" style="background:${p.color || COLORS[i % COLORS.length]}"></span><div><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}${p.uid===local.uid?' (You)':''}</div><div class="small">${data.phase==='speaking' ? 'Clue time' : data.phase==='voting' ? 'Thinking...' : 'Waiting in lobby'}</div></div></div><div>${badges.join(' ')}</div>`;
-    els.playersList.appendChild(div);
+    const card = `<div class="player-meta"><span class="dot" style="background:${p.color || COLORS[i % COLORS.length]}"></span><div><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}${p.uid===local.uid?' (You)':''}</div><div class="small">${data.phase==='speaking' ? 'Clue time' : data.phase==='voting' ? 'Thinking...' : 'Waiting in lobby'}</div></div></div><div>${badges.join(' ')}</div>`;
+    if(els.playersList){ const div = document.createElement('div'); div.className = 'player-item'; div.innerHTML = card; els.playersList.appendChild(div); }
+    if(els.setupPlayersList){ const div2 = document.createElement('div'); div2.className = 'player-item'; div2.innerHTML = card; els.setupPlayersList.appendChild(div2); }
   });
 }
 
 function renderScores(data){
-  els.scoreboard.innerHTML='';
+  if(els.scoreboard) els.scoreboard.innerHTML='';
+  if(els.setupScoreboard) els.setupScoreboard.innerHTML='';
   orderedPlayers(data).sort((a,b)=>(b.score||0)-(a.score||0)).forEach((p, i) => {
-    const div = document.createElement('div'); div.className = 'score-item';
-    div.innerHTML = `<div class="player-meta"><span class="dot" style="background:${p.color || COLORS[i % COLORS.length]}"></span><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}</div></div><div class="pill">${p.score || 0}</div>`;
-    els.scoreboard.appendChild(div);
+    const card = `<div class="player-meta"><span class="dot" style="background:${p.color || COLORS[i % COLORS.length]}"></span><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}</div></div><div class="pill">${p.score || 0}</div>`;
+    if(els.scoreboard){ const div = document.createElement('div'); div.className = 'score-item'; div.innerHTML = card; els.scoreboard.appendChild(div); }
+    if(els.setupScoreboard){ const div2 = document.createElement('div'); div2.className = 'score-item'; div2.innerHTML = card; els.setupScoreboard.appendChild(div2); }
   });
 }
 
@@ -510,7 +608,9 @@ function renderWord(data){
 }
 
 function renderAsset(data, secret){
-  els.assetBox.style.display='none'; els.assetCard.innerHTML=''; els.playSoundBtn.classList.add('hidden'); els.clearDrawBtn.classList.add('hidden'); els.drawingsCard.classList.toggle('hidden', data.mode !== 'draw');
+  els.assetBox.style.display='none';
+  if(data.mode !== 'draw') els.assetCard.innerHTML='';
+  els.playSoundBtn.classList.add('hidden'); els.clearDrawBtn.classList.add('hidden'); els.drawingsCard.classList.toggle('hidden', data.mode !== 'draw');
   if(data.mode==='picture' && secret?.asset){
     els.assetBox.style.display='flex';
     els.assetCard.innerHTML = `<div class="picture-display">${escapeHtml(secret.asset.icon)}</div><div class="picture-caption">${escapeHtml(secret.asset.label)}</div>`;
@@ -521,8 +621,12 @@ function renderAsset(data, secret){
     els.playSoundBtn.classList.remove('hidden');
   } else if(data.mode==='draw'){
     els.assetBox.style.display='flex';
-    els.assetCard.innerHTML = `<div class="draw-wrap"><div class="small" style="text-align:center">Draw your prompt below. Everyone in the room can see your sketch update live.</div><div class="draw-toolbar"><button class="secondary" id="thinBrushBtn">Thin</button><button class="secondary" id="thickBrushBtn">Thick</button></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="320"></canvas></div>`;
-    setupDrawingCanvas();
+    if(!document.getElementById('drawCanvas')){
+      els.assetCard.innerHTML = `<div class="draw-wrap"><div class="small" style="text-align:center">Draw your prompt below. Everyone in the room can see your sketch update live.</div><div class="draw-toolbar"><button class="secondary" id="thinBrushBtn">Thin</button><button class="secondary" id="thickBrushBtn">Thick</button></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="320"></canvas><div class="lobby-note">Your canvas stays full-size and live-syncs to the room while you draw.</div></div>`;
+      setupDrawingCanvas();
+      const existing = data.drawings?.[local.uid]?.imageData;
+      if(existing) loadDrawingIntoCanvas(existing);
+    }
     els.clearDrawBtn.classList.remove('hidden');
   }
   renderLiveDrawings(data);
@@ -534,7 +638,8 @@ function renderLiveDrawings(data){
   els.drawingsGrid.innerHTML = '';
   Object.keys(players).forEach(uid => {
     const p = players[uid]; const d = drawings[uid] || null; const div = document.createElement('div'); div.className='drawing-item';
-    div.innerHTML = `<div class="drawing-meta"><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}${uid===local.uid?' (You)':''}</div><div class="small">${d?.updatedAt ? 'Updated just now' : 'No drawing yet'}</div></div>${d?.imageData ? `<img class="drawing-thumb" alt="${escapeHtml(p.name)} drawing" src="${d.imageData}">` : `<div class="drawing-thumb" style="display:grid;place-items:center;color:#6d5a93">Waiting…</div>`}`;
+    const stamp = d?.updatedAt ? (uid===local.uid ? 'Your live board' : 'Live in room') : 'No drawing yet';
+    div.innerHTML = `<div class="drawing-meta"><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}${uid===local.uid?' (You)':''}</div><div class="small">${stamp}</div></div><div class="drawing-thumb-wrap">${d?.imageData ? `<img class="drawing-thumb" alt="${escapeHtml(p.name)} drawing" src="${d.imageData}">` : `<div class="drawing-placeholder">Waiting…</div>`}</div>`;
     els.drawingsGrid.appendChild(div);
   });
 }
@@ -590,15 +695,21 @@ function renderActivity(data){
 function updateUI(){
   const data = local.publicData;
   const joined = !!local.room;
+  const readyState = !!local.publicData?.players?.[local.uid]?.ready;
+  const readyBtn = document.getElementById('readyBtn');
+  const startBtn = document.getElementById('startBtn');
+  if(readyBtn){ readyBtn.textContent = readyState ? 'Unready' : 'Ready Up'; readyBtn.className = readyState ? 'secondary' : 'good'; readyBtn.disabled = !joined || (data && data.phase !== 'lobby'); }
+  if(startBtn){ const everyoneReady = !!data && orderedPlayers(data).length >= 3 && orderedPlayers(data).every(p => p.ready); startBtn.disabled = !joined || !local.isHost || !data || data.phase !== 'lobby' || !everyoneReady; startBtn.textContent = local.isHost ? '▶ Start Match' : 'Host starts the match'; }
   if(!joined){
     els.setupView.classList.remove('hidden'); els.gameView.classList.add('hidden');
-    els.playersList.innerHTML=''; els.scoreboard.innerHTML=''; els.voteGrid.innerHTML=''; els.activityLog.innerHTML=''; els.drawingsGrid.innerHTML='';
+    els.playersList.innerHTML=''; els.scoreboard.innerHTML=''; if(els.setupPlayersList) els.setupPlayersList.innerHTML=''; if(els.setupScoreboard) els.setupScoreboard.innerHTML=''; els.voteGrid.innerHTML=''; els.activityLog.innerHTML=''; els.drawingsGrid.innerHTML='';
     els.phaseText.textContent='Lobby'; els.roundText.textContent='0'; els.turnText.textContent='—'; els.speakerName.textContent='Nobody yet'; els.timerText.textContent='0';
     els.wordLabel.textContent='Join a room to begin'; els.myWord.textContent='—'; els.myHint.style.display='none'; els.assetBox.style.display='none';
     els.revealText.textContent='No round yet'; els.revealMeta.textContent=''; els.winnerBanner.innerHTML=''; return;
   }
   updateViewMode(data);
   if(!data) return;
+  updateGameHeader(data);
   els.phaseText.textContent = (data.phase || 'lobby').replace(/^./, m => m.toUpperCase());
   els.roundText.textContent = String(data.round || 0);
   els.turnText.textContent = data.players?.[data.currentSpeakerUid]?.name || '—';
@@ -619,13 +730,27 @@ function setupDrawingCanvas(){
   drawCtx = drawCanvas.getContext('2d', { alpha:false, desynchronized:true });
   drawCtx.fillStyle = '#ffffff'; drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
   drawCtx.lineCap = 'round'; drawCtx.lineJoin = 'round'; drawCtx.strokeStyle = '#5f2db0'; drawCtx.lineWidth = 4;
+  if(drawListenersBound) return;
   const pos = e => { const r=drawCanvas.getBoundingClientRect(); const p = e.touches ? e.touches[0] : e; return { x:(p.clientX-r.left)*(drawCanvas.width/r.width), y:(p.clientY-r.top)*(drawCanvas.height/r.height) }; };
-  const start = e => { drawActive = true; const p=pos(e); drawCtx.beginPath(); drawCtx.moveTo(p.x,p.y); syncDrawingSnapshot(false); e.preventDefault(); };
-  const move = e => { if(!drawActive) return; const p=pos(e); drawCtx.lineTo(p.x,p.y); drawCtx.stroke(); throttleDrawingUpload(); e.preventDefault(); };
+  const start = e => { if(!drawCtx) return; drawActive = true; const p=pos(e); drawCtx.beginPath(); drawCtx.moveTo(p.x,p.y); syncDrawingSnapshot(false); e.preventDefault(); };
+  const move = e => { if(!drawActive || !drawCtx) return; const p=pos(e); drawCtx.lineTo(p.x,p.y); drawCtx.stroke(); throttleDrawingUpload(); e.preventDefault(); };
   const end = () => { if(!drawActive) return; drawActive = false; syncDrawingSnapshot(true); };
-  drawCanvas.addEventListener('pointerdown', start); drawCanvas.addEventListener('pointermove', move); window.addEventListener('pointerup', end, { once:false });
+  drawCanvas.addEventListener('pointerdown', start); drawCanvas.addEventListener('pointermove', move); drawCanvas.addEventListener('pointerleave', end); window.addEventListener('pointerup', end, { once:false });
+  drawListenersBound = true;
   document.getElementById('thinBrushBtn').onclick = () => { if(drawCtx) drawCtx.lineWidth = 4; };
   document.getElementById('thickBrushBtn').onclick = () => { if(drawCtx) drawCtx.lineWidth = 10; };
+}
+
+function loadDrawingIntoCanvas(imageData){
+  if(!drawCanvas || !drawCtx || !imageData) return;
+  const img = new Image();
+  img.onload = () => {
+    drawCtx.fillStyle = '#ffffff';
+    drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
+    drawCtx.drawImage(img, 0, 0, drawCanvas.width, drawCanvas.height);
+    drawCtx.strokeStyle = '#5f2db0';
+  };
+  img.src = imageData;
 }
 function throttleDrawingUpload(){ const n=now(); if(n - local.lastDrawUpload > 650){ syncDrawingSnapshot(false); } }
 async function syncDrawingSnapshot(force){
@@ -639,7 +764,8 @@ function clearDrawing(){ if(drawCtx && drawCanvas){ drawCtx.fillStyle='#ffffff';
 els.passTurnBtn.onclick = passTurn;
 els.playSoundBtn.onclick = () => { const preset = local.currentSecret?.asset?.preset; if(preset) playPreset(preset); };
 els.clearDrawBtn.onclick = clearDrawing;
-els.speakSeconds.onchange = () => { els.timeSettingLabel.textContent = els.speakSeconds.value + 's'; };
+els.speakSeconds.onchange = () => { els.timeSettingLabel.textContent = els.speakSeconds.value + 's'; if(els.speakTimeGameLabel) els.speakTimeGameLabel.textContent = els.speakSeconds.value + 's'; };
+els.targetScore.onchange = () => { if(els.targetScoreLabel) els.targetScoreLabel.textContent = els.targetScore.value; };
 document.getElementById('createBtn').onclick = createRoom;
 document.getElementById('joinBtn').onclick = () => joinRoom();
 document.getElementById('copyBtn').onclick = copyInvite;
@@ -647,7 +773,7 @@ document.getElementById('readyBtn').onclick = toggleReady;
 document.getElementById('startBtn').onclick = startRound;
 document.getElementById('leaveBtn').onclick = () => leaveRoom(true);
 
-primeQueryRoom(); buildSetupUI(); applyModeSelection('word'); applyAvatarSelection(AVATARS[0]); startTimerLoop(); ensureAuth().catch(console.error);
+primeQueryRoom(); buildSetupUI(); applyModeSelection('word'); applyAvatarSelection(AVATARS[0]); if(els.gameRoomCode) els.gameRoomCode.textContent='—'; if(els.targetScoreLabel) els.targetScoreLabel.textContent=els.targetScore.value; if(els.speakTimeGameLabel) els.speakTimeGameLabel.textContent=els.speakSeconds.value + 's'; startTimerLoop(); ensureAuth().catch(console.error);
 </script>
 </body>
 </html>
