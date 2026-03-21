@@ -2447,7 +2447,7 @@ function chooseWordGenreSet(){
       genre,
       real: bank[realIndex],
       imposter: bank[imposterIndex],
-      hint: buildSecretHint(bank[realIndex], genre, 'word')
+      hint: ''
     };
   }
   const fallback = WORD_SETS[(Math.random() * WORD_SETS.length) | 0];
@@ -2711,7 +2711,7 @@ async function startRound(){
       : { type: mode==='draw' ? 'draw' : 'word' };
     const secret = {
       word: chosenWord,
-      hint: buildSecretHint(chosenWord, set.genre || local.selectedGenre || '', mode, set.hint || ''),
+      hint: isImposter ? buildSecretHint(chosenWord, set.genre || local.selectedGenre || '', mode, set.hint || '') : '',
       asset,
       type: mode,
       isImposter
