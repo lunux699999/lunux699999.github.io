@@ -117,7 +117,7 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
           <div class="setup-card">
             <div class="section-title">How this version is better</div>
             <div class="small" style="font-size:15px;color:#fff;line-height:1.55">
-              The match now switches to a dedicated game screen when the round starts. Drawing mode syncs live so everyone can see sketches as they happen. Players use Firebase anonymous auth instead of random local IDs, and prompts are stored privately per player instead of inside the public room state.
+              The match now switches to a dedicated game screen when the round starts. Drawing mode now lets players sketch privately and only submit once they are happy with the result. Players use Firebase anonymous auth instead of random local IDs, and prompts are stored privately per player instead of inside the public room state.
             </div>
           </div>
           <div class="setup-card">
@@ -247,6 +247,7 @@ const SOUND_SETS = [
   { real:{ label:'Retro beep', preset:'beepA' }, imposter:{ label:'Arcade boop', preset:'beepB' }, hint:'electronic, short, playful' }
 ];
 
+
 const app = firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
@@ -254,7 +255,7 @@ const db = firebase.database();
 const local = {
   uid:null, room:null, publicData:null, privateData:null, selectedMode:'word', selectedAvatar:AVATARS[0],
   isHost:false, authReady:false, transitionLock:false, unsubPublic:null, unsubPrivate:null, lastDrawUpload:0,
-  currentSecret:null
+  currentSecret:null, currentTool:'pen', currentBrush:4, cachedLocalDrawing:'', cachedLocalDrawingUpdatedAt:0
 };
 
 const els = {
@@ -273,7 +274,7 @@ const els = {
 };
 els.nameInput.value = localStorage.getItem('iwp-name') || '';
 
-let audioCtx = null, drawCanvas = null, drawCtx = null, drawActive = false, rafTimer = null, lastTimerRender = -1, drawSyncTimer = null, drawListenersBound = false, localDrawDirty = false;
+let audioCtx = null, drawCanvas = null, drawCtx = null, drawActive = false, rafTimer = null, lastTimerRender = -1, drawSyncTimer = null, drawListenersBound = false, localDrawDirty = false, boundDrawCanvas = null, lastLoadedDrawingAt = 0;
 
 function roomBase(code){ return db.ref('imposterPartySecure/rooms/' + code); }
 function publicRef(code){ return roomBase(code).child('public'); }
@@ -311,13 +312,15 @@ async function ensureAuth(){
   return new Promise((resolve,reject)=>{
     const unsub = auth.onAuthStateChanged(async user => {
       if(user){
-        unsub(); local.uid = user.uid; local.authReady = true; els.authBanner.textContent = 'Connected as guest.'; els.authBanner.className = 'banner ok'; resolve(user);
+        unsub(); local.uid = user.uid; local.authReady = true; els.authBanner.textContent = 'Connected as guest. Human check loading…'; els.authBanner.className = 'banner ok'; resolve(user);
       } else {
         try { await auth.signInAnonymously(); } catch (e) { els.authBanner.textContent = 'Auth failed: ' + e.message; reject(e); }
       }
     });
   });
 }
+
+async function ensureHuman(){ els.authBanner.textContent = 'Connected as guest.'; els.authBanner.className = 'banner ok'; return true; }
 
 function updateInviteUrl(){ if(!local.room) return; const url=new URL(location.href); url.searchParams.set('room', local.room); history.replaceState({},'',url.toString()); }
 async function copyInvite(){ if(!local.room) return; const url=new URL(location.href); url.searchParams.set('room',local.room); await navigator.clipboard.writeText(`Join my Imposter Party room: ${local.room}\n${url.toString()}`); status('Invite copied'); setTimeout(()=>status(local.room ? 'Connected' : 'Offline'), 1200); }
@@ -371,12 +374,13 @@ async function leaveRoom(removeSelf=true){
   if(local.room && local.unsubPublic) publicRef(local.room).off('value');
   if(local.room && local.unsubPrivate) privateSecretRef(local.room, local.uid).off('value');
   local.unsubPublic = null; local.unsubPrivate = null; local.room = null; local.publicData = null; local.privateData = null; local.currentSecret = null; local.isHost = false;
+  drawCanvas = null; drawCtx = null; boundDrawCanvas = null; drawActive = false; lastLoadedDrawingAt = 0; local.cachedLocalDrawing=''; local.cachedLocalDrawingUpdatedAt=0;
   els.roomCode.textContent='—'; status(local.authReady ? 'Offline' : 'Connecting');
   document.body.classList.remove('match-view');
   updateUI();
 }
 
-async function toggleReady(){ if(!local.room || !local.publicData?.players?.[local.uid]) return; await playersRef(local.room).child(local.uid + '/ready').set(!local.publicData.players[local.uid].ready); }
+async function toggleReady(){ if(!local.room || !local.publicData?.players?.[local.uid]) return; await ensureHuman('ready_toggle'); await playersRef(local.room).child(local.uid + '/ready').set(!local.publicData.players[local.uid].ready); }
 
 async function ensureHost(){
   if(!local.room || !local.publicData) return;
@@ -621,15 +625,22 @@ function renderAsset(data, secret){
     els.playSoundBtn.classList.remove('hidden');
   } else if(data.mode==='draw'){
     els.assetBox.style.display='flex';
-    if(!document.getElementById('drawCanvas')){
-      els.assetCard.innerHTML = `<div class="draw-wrap"><div class="small" style="text-align:center">Draw your prompt below. Everyone in the room can see your sketch update live while you draw.</div><div class="draw-stage"><div class="draw-main"><div class="draw-toolbar"><button class="secondary" id="thinBrushBtn">Thin</button><button class="secondary" id="thickBrushBtn">Thick</button></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="320"></canvas><div class="lobby-note">This is your real drawing board. Strokes should appear here instantly.</div></div><div class="draw-side"><div class="section-title" style="margin-bottom:0">Live room mirror</div><div class="small">This is the synced version everyone else sees.</div><div class="local-mirror-wrap"><img id="localLiveMirror" class="local-mirror hidden" alt="Your live drawing mirror"><div id="localLiveMirrorPlaceholder" class="local-mirror-placeholder">Start drawing…</div></div><div class="small" id="localLiveStamp">Not synced yet</div></div></div></div>`;
+    const canvasExists = !!document.getElementById('drawCanvas');
+    if(!canvasExists){
+      els.assetCard.innerHTML = `<div class="draw-wrap"><div class="small" style="text-align:center">Draw your prompt below. Your board is private until you press Confirm Drawing.</div><div class="draw-stage"><div class="draw-main"><div class="draw-toolbar"><button class="secondary tool-btn active" id="penToolBtn">Pen</button><button class="secondary tool-btn" id="eraserToolBtn">Rubber</button><button class="secondary brush-btn" id="thinBrushBtn">Thin</button><button class="secondary brush-btn" id="thickBrushBtn">Thick</button><button class="primary" id="confirmDrawingBtn">Confirm Drawing</button></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="320"></canvas><div class="lobby-note">This is your private sketch board. Draw here, then press Confirm Drawing when you want everyone else to see it.</div></div><div class="draw-side"><div class="section-title" style="margin-bottom:0">Submitted preview</div><div class="small">Only the latest confirmed drawing is shared to the room.</div><div class="local-mirror-wrap"><img id="localLiveMirror" class="local-mirror hidden" alt="Your submitted drawing preview"><div id="localLiveMirrorPlaceholder" class="local-mirror-placeholder">Nothing submitted yet</div></div><div class="small" id="localLiveStamp">Not submitted yet</div></div></div></div>`;
     }
     setupDrawingCanvas();
-    els.localLiveMirror = document.getElementById('localLiveMirror');
-    els.localLiveStamp = document.getElementById('localLiveStamp');
-    const existing = data.drawings?.[local.uid]?.imageData;
-    if(existing && !drawActive) loadDrawingIntoCanvas(existing);
-    updateLocalMirror(existing, data.drawings?.[local.uid]?.updatedAt);
+    const existingNode = data.drawings?.[local.uid] || null;
+    const existing = existingNode?.imageData || '';
+    const remoteUpdatedAt = existingNode?.updatedAt || 0;
+    if(existing && !drawActive && remoteUpdatedAt > Math.max(lastLoadedDrawingAt, local.lastDrawUpload || 0)){
+      loadDrawingIntoCanvas(existing, remoteUpdatedAt);
+    }
+    if(drawCanvas && (drawActive || (local.lastDrawUpload && local.lastDrawUpload >= remoteUpdatedAt))){
+      renderLocalMirrorFromCanvas();
+    } else {
+      updateLocalMirror(existing, remoteUpdatedAt);
+    }
     els.clearDrawBtn.classList.remove('hidden');
   }
   renderLiveDrawings(data);
@@ -645,7 +656,7 @@ function updateLocalMirror(imageData, updatedAt){
     mirror.src = imageData;
     mirror.classList.remove('hidden');
     placeholder.classList.add('hidden');
-    stamp.textContent = updatedAt ? 'Synced live to the room' : 'Live preview ready';
+    stamp.textContent = updatedAt ? 'Submitted to the room' : 'Preview ready';
   } else {
     mirror.removeAttribute('src');
     mirror.classList.add('hidden');
@@ -661,7 +672,7 @@ function renderLiveDrawings(data){
   const orderedUids = Object.keys(players).sort((a,b)=> (a===local.uid?-1:b===local.uid?1:0));
   orderedUids.forEach(uid => {
     const p = players[uid]; const d = drawings[uid] || null; const div = document.createElement('div'); div.className='drawing-item';
-    const stamp = d?.updatedAt ? (uid===local.uid ? 'Your live board' : 'Live in room') : 'No drawing yet';
+    const stamp = d?.updatedAt ? (uid===local.uid ? 'Your confirmed drawing' : 'Submitted to room') : 'No drawing yet';
     div.innerHTML = `<div class="drawing-meta"><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}${uid===local.uid?' (You)':''}</div><div class="small">${stamp}</div></div><div class="drawing-thumb-wrap">${d?.imageData ? `<img class="drawing-thumb" alt="${escapeHtml(p.name)} drawing" src="${d.imageData}">` : `<div class="drawing-placeholder">Waiting…</div>`}</div>`;
     els.drawingsGrid.appendChild(div);
   });
@@ -748,16 +759,55 @@ function ensureAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext || win
 function tone(ctx, freq, type, start, dur, gain=0.05){ const osc=ctx.createOscillator(); const g=ctx.createGain(); osc.type=type; osc.frequency.value=freq; g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(gain,start+0.02); g.gain.exponentialRampToValueAtTime(0.0001,start+dur); osc.connect(g).connect(ctx.destination); osc.start(start); osc.stop(start+dur+0.02); }
 function playPreset(preset){ const ctx=ensureAudio(); const t=ctx.currentTime+0.02; const patterns={ bellA:()=>{ tone(ctx,880,'sine',t,.35,.06); tone(ctx,1320,'sine',t+.04,.28,.03); }, bellB:()=>{ tone(ctx,740,'triangle',t,.28,.05); tone(ctx,1110,'triangle',t+.03,.22,.025); }, humA:()=>{ tone(ctx,110,'sawtooth',t,.9,.03); tone(ctx,220,'sine',t,.9,.015); }, humB:()=>{ tone(ctx,140,'triangle',t,.9,.03); tone(ctx,280,'sine',t,.9,.012); }, chirpA:()=>{ [880,990,1200].forEach((f,i)=>tone(ctx,f,'sine',t+i*.12,.09,.045)); }, chirpB:()=>{ [620,700,760,700].forEach((f,i)=>tone(ctx,f,'triangle',t+i*.1,.06,.035)); }, beepA:()=>{ [740,880].forEach((f,i)=>tone(ctx,f,'square',t+i*.16,.08,.03)); }, beepB:()=>{ [660,540].forEach((f,i)=>tone(ctx,f,'square',t+i*.14,.08,.03)); } }; if(patterns[preset]) patterns[preset](); }
 
-function setupDrawingCanvas(){
-  drawCanvas = document.getElementById('drawCanvas');
-  if(!drawCanvas) return;
-  drawCtx = drawCanvas.getContext('2d', { alpha:false, desynchronized:true });
-  drawCtx.fillStyle = '#ffffff';
-  drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
-  drawCtx.lineCap = 'round';
-  drawCtx.lineJoin = 'round';
+function updateDrawToolbarState(){
+  const penBtn = document.getElementById('penToolBtn');
+  const eraserBtn = document.getElementById('eraserToolBtn');
+  const thinBtn = document.getElementById('thinBrushBtn');
+  const thickBtn = document.getElementById('thickBrushBtn');
+  if(penBtn) penBtn.classList.toggle('active', local.currentTool === 'pen');
+  if(eraserBtn) eraserBtn.classList.toggle('active', local.currentTool === 'eraser');
+  if(thinBtn) thinBtn.classList.toggle('active', Number(local.currentBrush || 4) === 4);
+  if(thickBtn) thickBtn.classList.toggle('active', Number(local.currentBrush || 4) === 10);
+}
+
+function setBrush(tool=local.currentTool, width=local.currentBrush){
+  local.currentTool = tool;
+  local.currentBrush = width;
+  if(!drawCtx) return updateDrawToolbarState();
+  drawCtx.globalCompositeOperation = tool === 'eraser' ? 'destination-out' : 'source-over';
   drawCtx.strokeStyle = '#5f2db0';
-  drawCtx.lineWidth = drawCtx.lineWidth || 4;
+  drawCtx.lineWidth = width;
+  updateDrawToolbarState();
+}
+
+function cacheLocalDrawingFromCanvas(){
+  if(!drawCanvas) return;
+  try {
+    local.cachedLocalDrawing = drawCanvas.toDataURL('image/webp', 0.9);
+    local.cachedLocalDrawingUpdatedAt = now();
+  } catch(e) {}
+}
+
+function setupDrawingCanvas(){
+  const canvasEl = document.getElementById('drawCanvas');
+  if(!canvasEl) return;
+  const firstBind = boundDrawCanvas !== canvasEl || !drawCtx;
+  boundDrawCanvas = canvasEl;
+  drawCanvas = canvasEl;
+  if(!drawCtx || drawCanvas !== canvasEl){
+    drawCtx = drawCanvas.getContext('2d', { alpha:true, desynchronized:true });
+  }
+  if(firstBind){
+    drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
+    drawCtx.fillStyle = '#ffffff';
+    drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
+    drawCtx.lineCap = 'round';
+    drawCtx.lineJoin = 'round';
+    if(local.cachedLocalDrawing){
+      loadDrawingIntoCanvas(local.cachedLocalDrawing, local.cachedLocalDrawingUpdatedAt || 0);
+    }
+  }
+  setBrush(local.currentTool || 'pen', local.currentBrush || 4);
 
   const pos = e => {
     const r = drawCanvas.getBoundingClientRect();
@@ -768,79 +818,98 @@ function setupDrawingCanvas(){
     };
   };
 
-  drawCanvas.onpointerdown = e => {
+  const beginStroke = e => {
     if(!drawCtx) return;
     drawActive = true;
     const p = pos(e);
     drawCtx.beginPath();
     drawCtx.moveTo(p.x, p.y);
+    drawCtx.lineTo(p.x + 0.01, p.y + 0.01);
+    drawCtx.stroke();
     localDrawDirty = true;
+    cacheLocalDrawingFromCanvas();
     renderLocalMirrorFromCanvas();
     e.preventDefault();
   };
 
-  drawCanvas.onpointermove = e => {
+  const moveStroke = e => {
     if(!drawActive || !drawCtx) return;
     const p = pos(e);
     drawCtx.lineTo(p.x, p.y);
     drawCtx.stroke();
     localDrawDirty = true;
+    cacheLocalDrawingFromCanvas();
     renderLocalMirrorFromCanvas();
-    throttleDrawingUpload();
     e.preventDefault();
   };
 
-  const endStroke = () => {
+  const endStroke = e => {
     if(!drawActive) return;
     drawActive = false;
+    cacheLocalDrawingFromCanvas();
     renderLocalMirrorFromCanvas();
-    syncDrawingSnapshot(true);
+    if(e) e.preventDefault();
   };
 
+  drawCanvas.onpointerdown = beginStroke;
+  drawCanvas.onpointermove = moveStroke;
   drawCanvas.onpointerup = endStroke;
   drawCanvas.onpointerleave = endStroke;
   drawCanvas.onpointercancel = endStroke;
 
+  const penBtn = document.getElementById('penToolBtn');
+  const eraserBtn = document.getElementById('eraserToolBtn');
   const thinBtn = document.getElementById('thinBrushBtn');
   const thickBtn = document.getElementById('thickBrushBtn');
-  if(thinBtn) thinBtn.onclick = () => { if(drawCtx) drawCtx.lineWidth = 4; };
-  if(thickBtn) thickBtn.onclick = () => { if(drawCtx) drawCtx.lineWidth = 10; };
+  const confirmBtn = document.getElementById('confirmDrawingBtn');
+  if(penBtn) penBtn.onclick = () => setBrush('pen', local.currentBrush || 4);
+  if(eraserBtn) eraserBtn.onclick = () => setBrush('eraser', local.currentBrush || 18);
+  if(thinBtn) thinBtn.onclick = () => setBrush(local.currentTool || 'pen', local.currentTool === 'eraser' ? 18 : 4);
+  if(thickBtn) thickBtn.onclick = () => setBrush(local.currentTool || 'pen', local.currentTool === 'eraser' ? 28 : 10);
+  if(confirmBtn) confirmBtn.onclick = confirmDrawing;
+  updateDrawToolbarState();
 }
 
-function renderLocalMirrorFromCanvas(){
+function renderLocalMirrorFromCanvas(submittedAt=0){
   if(!drawCanvas) return;
-  updateLocalMirror(drawCanvas.toDataURL('image/webp', 0.72), now());
+  updateLocalMirror(drawCanvas.toDataURL('image/webp', 0.72), submittedAt);
 }
 
-function loadDrawingIntoCanvas(imageData){
+function loadDrawingIntoCanvas(imageData, updatedAt=0){
   if(!drawCanvas || !drawCtx || !imageData) return;
   const img = new Image();
   img.onload = () => {
     drawCtx.fillStyle = '#ffffff';
     drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
     drawCtx.drawImage(img, 0, 0, drawCanvas.width, drawCanvas.height);
-    drawCtx.strokeStyle = '#5f2db0';
+    lastLoadedDrawingAt = updatedAt || now();
+    local.cachedLocalDrawing = imageData;
+    local.cachedLocalDrawingUpdatedAt = lastLoadedDrawingAt;
+    setBrush(local.currentTool || 'pen', local.currentBrush || 4);
     renderLocalMirrorFromCanvas();
   };
   img.src = imageData;
 }
-function throttleDrawingUpload(){ const n=now(); if(n - local.lastDrawUpload > 220){ syncDrawingSnapshot(false); } }
-async function syncDrawingSnapshot(force){
+async function confirmDrawing(){
   if(!local.room || !drawCanvas || local.publicData?.mode !== 'draw') return;
   const n = now();
-  if(!force && n - local.lastDrawUpload < 180) return;
   local.lastDrawUpload = n;
-  const imageData = drawCanvas.toDataURL('image/webp', 0.72);
+  lastLoadedDrawingAt = Math.max(lastLoadedDrawingAt, n);
+  const imageData = drawCanvas.toDataURL('image/webp', 0.9);
+  local.cachedLocalDrawing = imageData;
+  local.cachedLocalDrawingUpdatedAt = n;
   updateLocalMirror(imageData, n);
   await drawingsRef(local.room).child(local.uid).set({ imageData, updatedAt:n, name:playerName() });
 }
+
 function clearDrawing(){
   if(drawCtx && drawCanvas){
     drawCtx.fillStyle='#ffffff';
     drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
     drawCtx.strokeStyle='#5f2db0';
+    local.cachedLocalDrawing = '';
+    local.cachedLocalDrawingUpdatedAt = 0;
     updateLocalMirror('', 0);
-    syncDrawingSnapshot(true);
   }
 }
 
