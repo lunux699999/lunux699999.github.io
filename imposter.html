@@ -49,7 +49,7 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
 .game-shell{display:grid;gap:18px}.match-header{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:stretch}.match-hero{padding:20px 22px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border:2px solid rgba(255,255,255,.22);box-shadow:var(--shadow)}.match-kicker{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:1000;color:var(--teal)}.match-title{font-size:clamp(30px,4vw,52px);line-height:1;font-weight:1000;margin-top:8px;text-shadow:0 3px 0 rgba(49,0,77,.28)}.match-sub{margin-top:10px;font-size:15px;color:#fff;max-width:60ch;line-height:1.45}.match-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.round-banner{padding:18px 20px;border-radius:26px;background:linear-gradient(180deg,rgba(95,246,229,.18),rgba(95,210,255,.14));border:2px solid rgba(95,246,229,.28);display:grid;gap:8px;align-content:center}.round-banner .label{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:1000;color:#d5fffa}.round-banner .headline{font-size:clamp(24px,3vw,40px);font-weight:1000;line-height:1.05}.round-banner .subline{font-size:14px;color:#fff}
 .page-flash{animation:pageFlash .5s ease}
 @keyframes pageFlash{0%{opacity:0;transform:translateY(18px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}
-.draw-wrap{display:grid;gap:12px}.draw-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.draw-canvas{display:block;width:100%;height:auto;max-height:420px;aspect-ratio:2/1;background:#fff;border-radius:18px;border:3px solid rgba(255,255,255,.24);cursor:crosshair;touch-action:none}.drawing-thumb-wrap{width:100%;max-width:320px;aspect-ratio:2/1;border-radius:16px;background:#fff;border:3px solid rgba(255,255,255,.2);overflow:hidden;display:grid;place-items:center}.drawing-thumb{width:100%;height:100%;object-fit:contain;background:#fff}.drawing-placeholder{width:100%;height:100%;display:grid;place-items:center;color:#6d5a93;font-weight:900}.drawing-item{align-items:flex-start}.drawing-meta{display:grid;gap:6px} .lobby-note{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.16)}
+.draw-wrap{display:grid;gap:12px}.draw-stage{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:12px;align-items:start}.draw-main{display:grid;gap:10px}.draw-side{display:grid;gap:10px}.draw-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.draw-canvas{display:block;width:100%;height:auto;max-height:420px;aspect-ratio:2/1;background:#fff;border-radius:18px;border:3px solid rgba(255,255,255,.24);cursor:crosshair;touch-action:none}.local-mirror-wrap,.drawing-thumb-wrap{width:100%;aspect-ratio:2/1;border-radius:16px;background:#fff;border:3px solid rgba(255,255,255,.2);overflow:hidden;display:grid;place-items:center}.drawing-thumb,.local-mirror{width:100%;height:100%;object-fit:contain;background:#fff}.drawing-placeholder,.local-mirror-placeholder{width:100%;height:100%;display:grid;place-items:center;color:#6d5a93;font-weight:900}.drawing-item{align-items:flex-start}.drawing-meta{display:grid;gap:6px} .lobby-note{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.16)}@media (max-width:900px){.draw-stage{grid-template-columns:1fr}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}@keyframes logoFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-6px) rotate(-1deg)}}@keyframes twinkle{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.15);opacity:1}}@keyframes blink{0%,45%,100%{transform:scaleY(1)}48%,52%{transform:scaleY(.1)}}
 @media (max-width:1000px){.setup-grid,.game-grid{grid-template-columns:1fr}.hero-inner{grid-template-columns:1fr;justify-items:center;text-align:center}.status-grid,.vote-grid,.mode-grid{grid-template-columns:1fr}.streamers{justify-items:start}.avatar-picker{grid-template-columns:repeat(5,1fr)}}
 </style>
@@ -273,7 +273,7 @@ const els = {
 };
 els.nameInput.value = localStorage.getItem('iwp-name') || '';
 
-let audioCtx = null, drawCanvas = null, drawCtx = null, drawActive = false, rafTimer = null, lastTimerRender = -1, drawSyncTimer = null, drawListenersBound = false;
+let audioCtx = null, drawCanvas = null, drawCtx = null, drawActive = false, rafTimer = null, lastTimerRender = -1, drawSyncTimer = null, drawListenersBound = false, localDrawDirty = false;
 
 function roomBase(code){ return db.ref('imposterPartySecure/rooms/' + code); }
 function publicRef(code){ return roomBase(code).child('public'); }
@@ -622,21 +622,44 @@ function renderAsset(data, secret){
   } else if(data.mode==='draw'){
     els.assetBox.style.display='flex';
     if(!document.getElementById('drawCanvas')){
-      els.assetCard.innerHTML = `<div class="draw-wrap"><div class="small" style="text-align:center">Draw your prompt below. Everyone in the room can see your sketch update live.</div><div class="draw-toolbar"><button class="secondary" id="thinBrushBtn">Thin</button><button class="secondary" id="thickBrushBtn">Thick</button></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="320"></canvas><div class="lobby-note">Your canvas stays full-size and live-syncs to the room while you draw.</div></div>`;
-      setupDrawingCanvas();
-      const existing = data.drawings?.[local.uid]?.imageData;
-      if(existing) loadDrawingIntoCanvas(existing);
+      els.assetCard.innerHTML = `<div class="draw-wrap"><div class="small" style="text-align:center">Draw your prompt below. Everyone in the room can see your sketch update live while you draw.</div><div class="draw-stage"><div class="draw-main"><div class="draw-toolbar"><button class="secondary" id="thinBrushBtn">Thin</button><button class="secondary" id="thickBrushBtn">Thick</button></div><canvas id="drawCanvas" class="draw-canvas" width="640" height="320"></canvas><div class="lobby-note">This is your real drawing board. Strokes should appear here instantly.</div></div><div class="draw-side"><div class="section-title" style="margin-bottom:0">Live room mirror</div><div class="small">This is the synced version everyone else sees.</div><div class="local-mirror-wrap"><img id="localLiveMirror" class="local-mirror hidden" alt="Your live drawing mirror"><div id="localLiveMirrorPlaceholder" class="local-mirror-placeholder">Start drawing…</div></div><div class="small" id="localLiveStamp">Not synced yet</div></div></div></div>`;
     }
+    setupDrawingCanvas();
+    els.localLiveMirror = document.getElementById('localLiveMirror');
+    els.localLiveStamp = document.getElementById('localLiveStamp');
+    const existing = data.drawings?.[local.uid]?.imageData;
+    if(existing && !drawActive) loadDrawingIntoCanvas(existing);
+    updateLocalMirror(existing, data.drawings?.[local.uid]?.updatedAt);
     els.clearDrawBtn.classList.remove('hidden');
   }
   renderLiveDrawings(data);
+}
+
+
+function updateLocalMirror(imageData, updatedAt){
+  const mirror = document.getElementById('localLiveMirror');
+  const placeholder = document.getElementById('localLiveMirrorPlaceholder');
+  const stamp = document.getElementById('localLiveStamp');
+  if(!mirror || !placeholder || !stamp) return;
+  if(imageData){
+    mirror.src = imageData;
+    mirror.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+    stamp.textContent = updatedAt ? 'Synced live to the room' : 'Live preview ready';
+  } else {
+    mirror.removeAttribute('src');
+    mirror.classList.add('hidden');
+    placeholder.classList.remove('hidden');
+    stamp.textContent = 'Not synced yet';
+  }
 }
 
 function renderLiveDrawings(data){
   if(data.mode !== 'draw'){ els.drawingsGrid.innerHTML=''; return; }
   const drawings = data.drawings || {}; const players = data.players || {};
   els.drawingsGrid.innerHTML = '';
-  Object.keys(players).forEach(uid => {
+  const orderedUids = Object.keys(players).sort((a,b)=> (a===local.uid?-1:b===local.uid?1:0));
+  orderedUids.forEach(uid => {
     const p = players[uid]; const d = drawings[uid] || null; const div = document.createElement('div'); div.className='drawing-item';
     const stamp = d?.updatedAt ? (uid===local.uid ? 'Your live board' : 'Live in room') : 'No drawing yet';
     div.innerHTML = `<div class="drawing-meta"><div style="font-weight:1000">${escapeHtml(p.avatar || '🙂')} ${escapeHtml(p.name)}${uid===local.uid?' (You)':''}</div><div class="small">${stamp}</div></div><div class="drawing-thumb-wrap">${d?.imageData ? `<img class="drawing-thumb" alt="${escapeHtml(p.name)} drawing" src="${d.imageData}">` : `<div class="drawing-placeholder">Waiting…</div>`}</div>`;
@@ -726,19 +749,67 @@ function tone(ctx, freq, type, start, dur, gain=0.05){ const osc=ctx.createOscil
 function playPreset(preset){ const ctx=ensureAudio(); const t=ctx.currentTime+0.02; const patterns={ bellA:()=>{ tone(ctx,880,'sine',t,.35,.06); tone(ctx,1320,'sine',t+.04,.28,.03); }, bellB:()=>{ tone(ctx,740,'triangle',t,.28,.05); tone(ctx,1110,'triangle',t+.03,.22,.025); }, humA:()=>{ tone(ctx,110,'sawtooth',t,.9,.03); tone(ctx,220,'sine',t,.9,.015); }, humB:()=>{ tone(ctx,140,'triangle',t,.9,.03); tone(ctx,280,'sine',t,.9,.012); }, chirpA:()=>{ [880,990,1200].forEach((f,i)=>tone(ctx,f,'sine',t+i*.12,.09,.045)); }, chirpB:()=>{ [620,700,760,700].forEach((f,i)=>tone(ctx,f,'triangle',t+i*.1,.06,.035)); }, beepA:()=>{ [740,880].forEach((f,i)=>tone(ctx,f,'square',t+i*.16,.08,.03)); }, beepB:()=>{ [660,540].forEach((f,i)=>tone(ctx,f,'square',t+i*.14,.08,.03)); } }; if(patterns[preset]) patterns[preset](); }
 
 function setupDrawingCanvas(){
-  drawCanvas = document.getElementById('drawCanvas'); if(!drawCanvas) return;
+  drawCanvas = document.getElementById('drawCanvas');
+  if(!drawCanvas) return;
   drawCtx = drawCanvas.getContext('2d', { alpha:false, desynchronized:true });
-  drawCtx.fillStyle = '#ffffff'; drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
-  drawCtx.lineCap = 'round'; drawCtx.lineJoin = 'round'; drawCtx.strokeStyle = '#5f2db0'; drawCtx.lineWidth = 4;
-  if(drawListenersBound) return;
-  const pos = e => { const r=drawCanvas.getBoundingClientRect(); const p = e.touches ? e.touches[0] : e; return { x:(p.clientX-r.left)*(drawCanvas.width/r.width), y:(p.clientY-r.top)*(drawCanvas.height/r.height) }; };
-  const start = e => { if(!drawCtx) return; drawActive = true; const p=pos(e); drawCtx.beginPath(); drawCtx.moveTo(p.x,p.y); syncDrawingSnapshot(false); e.preventDefault(); };
-  const move = e => { if(!drawActive || !drawCtx) return; const p=pos(e); drawCtx.lineTo(p.x,p.y); drawCtx.stroke(); throttleDrawingUpload(); e.preventDefault(); };
-  const end = () => { if(!drawActive) return; drawActive = false; syncDrawingSnapshot(true); };
-  drawCanvas.addEventListener('pointerdown', start); drawCanvas.addEventListener('pointermove', move); drawCanvas.addEventListener('pointerleave', end); window.addEventListener('pointerup', end, { once:false });
-  drawListenersBound = true;
-  document.getElementById('thinBrushBtn').onclick = () => { if(drawCtx) drawCtx.lineWidth = 4; };
-  document.getElementById('thickBrushBtn').onclick = () => { if(drawCtx) drawCtx.lineWidth = 10; };
+  drawCtx.fillStyle = '#ffffff';
+  drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
+  drawCtx.lineCap = 'round';
+  drawCtx.lineJoin = 'round';
+  drawCtx.strokeStyle = '#5f2db0';
+  drawCtx.lineWidth = drawCtx.lineWidth || 4;
+
+  const pos = e => {
+    const r = drawCanvas.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return {
+      x: (p.clientX - r.left) * (drawCanvas.width / r.width),
+      y: (p.clientY - r.top) * (drawCanvas.height / r.height)
+    };
+  };
+
+  drawCanvas.onpointerdown = e => {
+    if(!drawCtx) return;
+    drawActive = true;
+    const p = pos(e);
+    drawCtx.beginPath();
+    drawCtx.moveTo(p.x, p.y);
+    localDrawDirty = true;
+    renderLocalMirrorFromCanvas();
+    e.preventDefault();
+  };
+
+  drawCanvas.onpointermove = e => {
+    if(!drawActive || !drawCtx) return;
+    const p = pos(e);
+    drawCtx.lineTo(p.x, p.y);
+    drawCtx.stroke();
+    localDrawDirty = true;
+    renderLocalMirrorFromCanvas();
+    throttleDrawingUpload();
+    e.preventDefault();
+  };
+
+  const endStroke = () => {
+    if(!drawActive) return;
+    drawActive = false;
+    renderLocalMirrorFromCanvas();
+    syncDrawingSnapshot(true);
+  };
+
+  drawCanvas.onpointerup = endStroke;
+  drawCanvas.onpointerleave = endStroke;
+  drawCanvas.onpointercancel = endStroke;
+
+  const thinBtn = document.getElementById('thinBrushBtn');
+  const thickBtn = document.getElementById('thickBrushBtn');
+  if(thinBtn) thinBtn.onclick = () => { if(drawCtx) drawCtx.lineWidth = 4; };
+  if(thickBtn) thickBtn.onclick = () => { if(drawCtx) drawCtx.lineWidth = 10; };
+}
+
+function renderLocalMirrorFromCanvas(){
+  if(!drawCanvas) return;
+  updateLocalMirror(drawCanvas.toDataURL('image/webp', 0.72), now());
 }
 
 function loadDrawingIntoCanvas(imageData){
@@ -749,17 +820,29 @@ function loadDrawingIntoCanvas(imageData){
     drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
     drawCtx.drawImage(img, 0, 0, drawCanvas.width, drawCanvas.height);
     drawCtx.strokeStyle = '#5f2db0';
+    renderLocalMirrorFromCanvas();
   };
   img.src = imageData;
 }
-function throttleDrawingUpload(){ const n=now(); if(n - local.lastDrawUpload > 650){ syncDrawingSnapshot(false); } }
+function throttleDrawingUpload(){ const n=now(); if(n - local.lastDrawUpload > 220){ syncDrawingSnapshot(false); } }
 async function syncDrawingSnapshot(force){
   if(!local.room || !drawCanvas || local.publicData?.mode !== 'draw') return;
-  const n = now(); if(!force && n - local.lastDrawUpload < 500) return; local.lastDrawUpload = n;
+  const n = now();
+  if(!force && n - local.lastDrawUpload < 180) return;
+  local.lastDrawUpload = n;
   const imageData = drawCanvas.toDataURL('image/webp', 0.72);
+  updateLocalMirror(imageData, n);
   await drawingsRef(local.room).child(local.uid).set({ imageData, updatedAt:n, name:playerName() });
 }
-function clearDrawing(){ if(drawCtx && drawCanvas){ drawCtx.fillStyle='#ffffff'; drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height); drawCtx.strokeStyle='#5f2db0'; syncDrawingSnapshot(true); } }
+function clearDrawing(){
+  if(drawCtx && drawCanvas){
+    drawCtx.fillStyle='#ffffff';
+    drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
+    drawCtx.strokeStyle='#5f2db0';
+    updateLocalMirror('', 0);
+    syncDrawingSnapshot(true);
+  }
+}
 
 els.passTurnBtn.onclick = passTurn;
 els.playSoundBtn.onclick = () => { const preset = local.currentSecret?.asset?.preset; if(preset) playPreset(preset); };
