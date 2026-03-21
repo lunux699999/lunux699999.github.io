@@ -2411,21 +2411,41 @@ function playerName(){ const n=(els.nameInput.value||'').trim().slice(0,24)||'Pl
 function orderedPlayers(data){ return Object.values(data?.players||{}).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0)); }
 function modeLabel(mode){ return { word:'Word', picture:'Picture', draw:'Drawing', sound:'Sound' }[mode] || 'Word'; }
 
-function buildSecretHint(word, genre, mode, baseHint=''){
-  const clean = String(word || '').trim();
+function buildSecretHint(referenceWord, genre, mode, baseHint=''){
+  const clean = String(referenceWord || '').trim();
+  const safeBase = String(baseHint || '').trim();
   const tokens = clean.split(/\s+/).filter(Boolean);
-  const first = clean ? clean.charAt(0).toUpperCase() : '?';
+  const compact = clean.replace(/\s+/g,'');
+  const letters = compact.length;
   const words = tokens.length || 1;
-  const chars = clean.replace(/\s+/g,'').length || clean.length || 0;
+  const first = clean ? clean.charAt(0).toUpperCase() : '';
   const pieces = [];
-  if(baseHint) pieces.push(baseHint);
-  if(clean){
-    pieces.push(`Starts with ${first}`);
-    pieces.push(words > 1 ? `${words} words` : `${chars} letters`);
+
+  if (safeBase) pieces.push(safeBase);
+
+  if (clean) {
+    if (first) pieces.push(`Starts with ${first}`);
+    pieces.push(words > 1 ? `${words} words` : `${letters} letters`);
+
+    const lower = clean.toLowerCase();
+    if (mode === 'word') {
+      if (/er$|or$|ist$|ian$/.test(lower)) pieces.push('Sounds like a person or role');
+      else if (/ing$/.test(lower)) pieces.push('Feels like an action or activity');
+      else if (genre === 'Animals') pieces.push('Think of a living creature');
+      else if (genre === 'Food') pieces.push('Think of something edible');
+      else if (genre === 'Drinks') pieces.push('Think of something you sip');
+      else if (genre === 'Places' || genre === 'Buildings') pieces.push('Think of a place');
+      else if (genre === 'Nature') pieces.push('Think outdoors');
+      else if (genre === 'Mechanical') pieces.push('Think of an object or machine');
+      else if (genre === 'Entertainment' || genre === 'TV & Internet') pieces.push('Think pop culture');
+      else if (genre in {'Actors':1,'Actresses':1,'Musicians':1,'Rappers':1,'Athletes':1,'Politicians':1,'Scientists':1,'Inventors & Tech':1,'Artists & Writers':1}) pieces.push('Think of a known public figure');
+    }
   }
+
   if(mode === 'draw') pieces.push('Sketch privately, then confirm it');
   if(mode === 'sound') pieces.push('Use sound clues, not the exact title');
   if(mode === 'picture') pieces.push('Describe the image without naming it');
+
   return pieces.join(' • ');
 }
 
@@ -2709,9 +2729,12 @@ async function startRound(){
     const asset = (mode==='picture') ? (isImposter ? set.imposter : set.real)
       : (mode==='sound') ? (isImposter ? set.imposter : set.real)
       : { type: mode==='draw' ? 'draw' : 'word' };
+    const hintReferenceWord = isImposter
+      ? (mode === 'picture' ? (set.real?.label || '') : mode === 'sound' ? (set.real?.label || '') : (set.real || ''))
+      : '';
     const secret = {
       word: chosenWord,
-      hint: isImposter ? buildSecretHint(chosenWord, set.genre || local.selectedGenre || '', mode, set.hint || '') : '',
+      hint: isImposter ? buildSecretHint(hintReferenceWord, set.genre || local.selectedGenre || '', mode, set.hint || '') : '',
       asset,
       type: mode,
       isImposter
