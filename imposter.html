@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
-body{font-family:"Nunito","Segoe UI",system-ui,sans-serif;color:var(--text);background:linear-gradient(135deg,var(--bg1),var(--bg2) 52%,var(--bg3));overflow-x:hidden}
+body{font-family:"Nunito","Segoe UI",system-ui,sans-serif;color:var(--text);background:linear-gradient(135deg,var(--bg1),var(--bg2) 52%,var(--bg3));overflow-x:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent} input,textarea,select,option,[contenteditable="true"]{-webkit-user-select:text;user-select:text} button,.pill,.panel,.list-card,.word-panel,.speaker-card,.reveal-card,.mode-card,.setup-card,.drawings-card,.logo-wrap,.logo-badge,.mode-grid,.players-grid,.score-list,.log,.stat-card,.match-header,.round-banner{-webkit-user-select:none;user-select:none}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background:radial-gradient(circle at 20% 10%, rgba(255,255,255,.2), transparent 18%),radial-gradient(circle at 85% 0%, rgba(255,255,255,.14), transparent 20%),radial-gradient(circle at 50% 70%, rgba(255,255,255,.08), transparent 16%),radial-gradient(circle, rgba(255,255,255,.09) 0 1.5px, transparent 1.5px 100%);background-size:auto,auto,auto,22px 22px}
 .wrapper{min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:18px 14px 28px}
 .shell{width:min(1180px,100%);border-radius:26px;background:rgba(76,18,110,.28);border:1px solid rgba(255,255,255,.16);box-shadow:var(--shadow);padding:16px 16px 18px;backdrop-filter:blur(10px)}
@@ -45,9 +45,11 @@ select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background-i
 .custom-select.open .custom-select-btn .caret{transform:rotate(-135deg);margin-top:4px}
 .custom-select-menu{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:30;display:grid;gap:6px;max-height:280px;overflow:auto;padding:8px;border-radius:18px;border:2px solid rgba(255,255,255,.2);background:linear-gradient(180deg,rgba(117,33,162,.98),rgba(88,18,132,.98));box-shadow:0 20px 36px rgba(35,0,57,.28);opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity .16s ease,transform .16s ease}
 .custom-select.open .custom-select-menu{opacity:1;transform:translateY(0);pointer-events:auto}
+.custom-select.disabled .custom-select-menu{display:none}
 .custom-option{padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font:inherit;font-size:15px;font-weight:800;text-align:left;border:1px solid transparent;cursor:pointer}
 .custom-option:hover,.custom-option[aria-selected="true"]{background:rgba(95,210,255,.16);border-color:rgba(95,210,255,.45)}
 .custom-option small{display:block;color:rgba(255,255,255,.68);font-size:11px;font-weight:800;margin-top:2px}
+.custom-select-menu::-webkit-scrollbar{width:12px}.custom-select-menu::-webkit-scrollbar-track{background:rgba(255,255,255,.08);border-radius:999px}.custom-select-menu::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(95,210,255,.9),rgba(95,246,229,.85));border-radius:999px;border:2px solid rgba(92,24,134,.95)}.custom-select-menu{scrollbar-color:rgba(95,210,255,.95) rgba(255,255,255,.08);scrollbar-width:thin;overscroll-behavior:contain}.custom-select-btn[disabled]{opacity:.55;cursor:not-allowed}.vote-btn.is-self{opacity:.42;cursor:not-allowed}.vote-btn.is-self .small{opacity:.9}.role-note{margin-top:10px;padding:10px 14px;border-radius:14px;border:2px solid rgba(95,246,229,.25);background:rgba(95,246,229,.12);font-weight:900;display:inline-block}
 button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight:1000;cursor:pointer;letter-spacing:.03em;transition:transform .12s ease, filter .12s ease;box-shadow:0 6px 0 rgba(45,0,73,.18)}button:hover{transform:translateY(-1px)}button:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(45,0,73,.18)}button:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:0 6px 0 rgba(45,0,73,.12)}
 .primary{background:linear-gradient(180deg,#fefefe,#e8e5ff);color:#3f266a}.secondary{background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.24)}.good{background:linear-gradient(180deg,#86ffd1,#4ce7ba);color:#08483c}.danger{background:linear-gradient(180deg,#ff9cc5,#ff73a9);color:#5e0f39}
 .btn-row,.phase-actions{display:flex;gap:10px;flex-wrap:wrap}.section-title{font-size:13px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);text-shadow:0 2px 0 rgba(49,0,77,.35);margin-bottom:8px}.small{font-size:13px;color:var(--muted)}
@@ -68,7 +70,17 @@ button{border:none;border-radius:16px;padding:13px 18px;font:inherit;font-weight
 .players-grid,.score-list,.log,.drawings-grid{display:grid;gap:10px}.player-item,.score-item,.log-item,.drawing-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18)}.player-meta{display:flex;align-items:center;gap:10px}.dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.85)}.tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:1000}.t-ready{background:rgba(95,246,229,.18);color:#8bfff2}.t-turn{background:rgba(255,226,122,.18);color:#fff2b6}.t-voted{background:rgba(95,210,255,.18);color:#c7f0ff}.t-host{background:rgba(255,135,192,.18);color:#ffd3e9}
 .speaker-card{text-align:center;display:grid;gap:10px}.speaker-name{font-size:34px;font-weight:1000;text-shadow:0 2px 0 rgba(49,0,77,.35)}.timer{font-size:68px;font-weight:1000;line-height:1;color:var(--teal)}.vote-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vote-btn{width:100%;text-align:left;background:rgba(255,255,255,.08);color:#fff;border:2px solid rgba(255,255,255,.14);box-shadow:none}.vote-btn:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.28)}.vote-btn.is-self{opacity:.5}.vote-btn.selected{background:rgba(95,246,229,.16);border-color:rgba(95,246,229,.72);box-shadow:0 0 0 3px rgba(95,246,229,.16)}
 .reveal-big{font-size:clamp(28px,4vw,48px);font-weight:1000;line-height:1.08;text-shadow:0 2px 0 rgba(49,0,77,.35)}.winner-banner{margin-top:12px;padding:16px;border-radius:18px;background:rgba(255,226,122,.18);border:2px solid rgba(255,226,122,.34);font-size:24px;font-weight:1000;text-align:center}
-.hidden{display:none !important}.banner{padding:12px 14px;border-radius:16px;border:2px solid rgba(255,255,255,.24);background:rgba(255,255,255,.12);font-weight:900}.banner.warn{background:rgba(255,226,122,.18);border-color:rgba(255,226,122,.34)}.banner.ok{background:rgba(95,246,229,.16);border-color:rgba(95,246,229,.28)}.view{opacity:1;transform:translateY(0) scale(1);transition:opacity .38s ease,transform .38s ease}.view.hidden{display:none !important}.view.entering{opacity:0;transform:translateY(22px) scale(.985)}
+.hidden{display:none !important}
+.pulse-pop{animation:pulsePop .22s ease}
+.screen-shift{animation:screenShift .32s ease}
+@keyframes pulsePop{0%{transform:scale(1)}50%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes screenShift{0%{transform:translateY(8px);opacity:.88}100%{transform:translateY(0);opacity:1}}
+.banner{padding:12px 14px;border-radius:16px;border:2px solid rgba(255,255,255,.24);background:rgba(255,255,255,.12);font-weight:900}.banner.warn{background:rgba(255,226,122,.18);border-color:rgba(255,226,122,.34)}.banner.ok{background:rgba(95,246,229,.16);border-color:rgba(95,246,229,.28)}.view{opacity:1;transform:translateY(0) scale(1);transition:opacity .38s ease,transform .38s ease}.view.hidden{display:none !important}
+.pulse-pop{animation:pulsePop .22s ease}
+.screen-shift{animation:screenShift .32s ease}
+@keyframes pulsePop{0%{transform:scale(1)}50%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes screenShift{0%{transform:translateY(8px);opacity:.88}100%{transform:translateY(0);opacity:1}}
+.view.entering{opacity:0;transform:translateY(22px) scale(.985)}
 .game-shell{display:grid;gap:18px}.match-header{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:stretch}.match-hero{padding:20px 22px;border-radius:28px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border:2px solid rgba(255,255,255,.22);box-shadow:var(--shadow)}.match-kicker{font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:1000;color:var(--teal)}.match-title{font-size:clamp(30px,4vw,52px);line-height:1;font-weight:1000;margin-top:8px;text-shadow:0 3px 0 rgba(49,0,77,.28)}.match-sub{margin-top:10px;font-size:15px;color:#fff;max-width:60ch;line-height:1.45}.match-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.round-banner{padding:18px 20px;border-radius:26px;background:linear-gradient(180deg,rgba(95,246,229,.18),rgba(95,210,255,.14));border:2px solid rgba(95,246,229,.28);display:grid;gap:8px;align-content:center}.round-banner .label{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:1000;color:#d5fffa}.round-banner .headline{font-size:clamp(24px,3vw,40px);font-weight:1000;line-height:1.05}.round-banner .subline{font-size:14px;color:#fff}
 .page-flash{animation:pageFlash .5s ease}
 @keyframes pageFlash{0%{opacity:0;transform:translateY(18px) scale(.985)}100%{opacity:1;transform:translateY(0) scale(1)}}
@@ -2365,7 +2377,7 @@ const db = firebase.database();
 const local = {
   uid:null, room:null, publicData:null, privateData:null, selectedMode:'word', selectedGenre:'Any', selectedAvatar:'',
   isHost:false, authReady:false, transitionLock:false, unsubPublic:null, unsubPrivate:null, lastDrawUpload:0,
-  currentSecret:null, currentTool:'pen', currentBrush:4, cachedLocalDrawing:'', cachedLocalDrawingUpdatedAt:0
+  currentSecret:null, currentTool:'pen', currentBrush:4, cachedLocalDrawing:'', cachedLocalDrawingUpdatedAt:0, autoJoinCode:'', soundEnabled:false, lastPhase:'', lastReady:null
 };
 
 const els = {
@@ -2399,6 +2411,25 @@ function playerName(){ const n=(els.nameInput.value||'').trim().slice(0,24)||'Pl
 function orderedPlayers(data){ return Object.values(data?.players||{}).sort((a,b)=>(a.joinedAt||0)-(b.joinedAt||0)); }
 function modeLabel(mode){ return { word:'Word', picture:'Picture', draw:'Drawing', sound:'Sound' }[mode] || 'Word'; }
 
+function buildSecretHint(word, genre, mode, baseHint=''){
+  const clean = String(word || '').trim();
+  const tokens = clean.split(/\s+/).filter(Boolean);
+  const first = clean ? clean.charAt(0).toUpperCase() : '?';
+  const words = tokens.length || 1;
+  const chars = clean.replace(/\s+/g,'').length || clean.length || 0;
+  const pieces = [];
+  if(genre) pieces.push(`Genre: ${genre}`);
+  if(baseHint) pieces.push(baseHint);
+  if(clean){
+    pieces.push(`Starts with ${first}`);
+    pieces.push(words > 1 ? `${words} words` : `${chars} letters`);
+  }
+  if(mode === 'draw') pieces.push('Sketch privately, then confirm it');
+  if(mode === 'sound') pieces.push('Use sound clues, not the exact title');
+  if(mode === 'picture') pieces.push('Describe the image without naming it');
+  return pieces.join(' • ');
+}
+
 function chooseWordGenreSet(){
   const pickedGenre = local.selectedGenre && local.selectedGenre !== 'Any'
     ? local.selectedGenre
@@ -2413,11 +2444,11 @@ function chooseWordGenreSet(){
       genre,
       real: bank[realIndex],
       imposter: bank[imposterIndex],
-      hint: `Genre: ${genre}`
+      hint: buildSecretHint(bank[realIndex], genre, 'word')
     };
   }
   const fallback = WORD_SETS[(Math.random() * WORD_SETS.length) | 0];
-  return { ...fallback, genre: fallback.genre || genre, hint: fallback.hint || `Genre: ${genre}` };
+  return { ...fallback, genre: fallback.genre || genre, hint: fallback.hint || buildSecretHint(fallback.real || fallback.word || '', fallback.genre || genre, 'word') };
 }
 function chooseSet(mode){
   if(mode === 'word') return chooseWordGenreSet();
@@ -2436,10 +2467,74 @@ function refreshGenreUI(){
   if(els.genreText) els.genreText.textContent = local.selectedGenre || 'Any';
   if(els.genreSelect) els.genreSelect.value = local.selectedGenre || 'Any';
   const isWord = local.selectedMode === 'word';
-  if(els.genreSelect) els.genreSelect.disabled = !isWord;
+  if(els.genreSelect) {
+    els.genreSelect.disabled = !isWord;
+    const wrap = els.genreSelect.nextElementSibling;
+    if(wrap && wrap.classList.contains('custom-select')){
+      const label = wrap.querySelector('.label');
+      const btn = wrap.querySelector('.custom-select-btn');
+      const current = [...els.genreSelect.options].find(opt => opt.value === els.genreSelect.value) || els.genreSelect.options[0];
+      if(label && current) label.textContent = current.textContent;
+      if(btn) btn.disabled = !isWord;
+      wrap.classList.toggle('disabled', !isWord);
+      if(!isWord){ wrap.classList.remove('open'); btn && btn.setAttribute('aria-expanded','false'); }
+      wrap.querySelectorAll('.custom-option').forEach(opt=>opt.setAttribute('aria-selected', String(opt.dataset.value===els.genreSelect.value)));
+    }
+  }
   if(els.genrePill) els.genrePill.style.opacity = isWord ? '1' : '.55';
 }
-function applyModeSelection(mode){ local.selectedMode = mode; els.modeText.textContent = modeLabel(mode); els.modeStatText.textContent = modeLabel(mode); [...els.modeGrid.querySelectorAll('.mode-btn')].forEach(btn=>btn.classList.toggle('active', btn.dataset.mode===mode)); refreshGenreUI(); }
+
+function pulseEl(el){
+  if(!el) return;
+  el.classList.remove('pulse-pop');
+  void el.offsetWidth;
+  el.classList.add('pulse-pop');
+  setTimeout(()=>el.classList.remove('pulse-pop'), 260);
+}
+function animateScreenShift(){
+  const active = (!els.gameView.classList.contains('hidden') ? els.gameView.querySelector('.game-shell') : els.setupView);
+  if(!active) return;
+  active.classList.remove('screen-shift');
+  void active.offsetWidth;
+  active.classList.add('screen-shift');
+  setTimeout(()=>active.classList.remove('screen-shift'), 340);
+}
+function ensureAudioUnlocked(){
+  try{
+    const ctx = ensureAudio();
+    if(ctx.state === 'suspended') ctx.resume();
+    local.soundEnabled = true;
+  }catch(e){}
+}
+function playUiSound(kind='tap'){
+  try{
+    const ctx = ensureAudio();
+    if(ctx.state === 'suspended'){ ctx.resume().catch(()=>{}); }
+    const t = ctx.currentTime + 0.01;
+    const map = {
+      tap: ()=>{ tone(ctx,720,'sine',t,.05,.02); tone(ctx,940,'sine',t+.04,.05,.015); },
+      ready: ()=>{ tone(ctx,520,'triangle',t,.08,.03); tone(ctx,740,'triangle',t+.08,.12,.03); },
+      join: ()=>{ tone(ctx,460,'sine',t,.08,.03); tone(ctx,690,'sine',t+.06,.1,.028); tone(ctx,920,'sine',t+.12,.12,.025); },
+      vote: ()=>{ tone(ctx,320,'square',t,.06,.025); tone(ctx,280,'square',t+.07,.08,.025); },
+      success: ()=>{ tone(ctx,540,'triangle',t,.08,.028); tone(ctx,810,'triangle',t+.08,.12,.03); tone(ctx,1080,'triangle',t+.16,.12,.02); }
+    };
+    (map[kind] || map.tap)();
+  }catch(e){}
+}
+async function maybeAutoJoinFromInvite(){
+  if(!local.autoJoinCode || local.room || !(els.nameInput.value || '').trim()) return;
+  const code = local.autoJoinCode;
+  local.autoJoinCode = '';
+  status('Joining lobby…');
+  try{
+    await joinRoom(code);
+    playUiSound('join');
+    pulseEl(els.roomCode);
+  }catch(e){
+    console.error(e);
+  }
+}
+function applyModeSelection(mode){ local.selectedMode = mode; els.modeText.textContent = modeLabel(mode); els.modeStatText.textContent = modeLabel(mode); [...els.modeGrid.querySelectorAll('.mode-btn')].forEach(btn=>btn.classList.toggle('active', btn.dataset.mode===mode)); playUiSound('tap'); pulseEl(els.modeGrid); refreshGenreUI(); }
 function applyAvatarSelection(avatar){
   local.selectedAvatar = avatar;
   if(els.avatarPicker) [...els.avatarPicker.querySelectorAll('.avatar-btn')].forEach(btn=>btn.classList.toggle('active', btn.dataset.avatar===avatar));
@@ -2465,8 +2560,21 @@ function initCustomSelect(selectEl, {descriptions=null} = {}){
     const current = options.find(opt=>opt.value===selectEl.value) || options[0];
     label.textContent = current ? current.text : '';
     menu.querySelectorAll('.custom-option').forEach(opt=>opt.setAttribute('aria-selected', String(opt.dataset.value===selectEl.value)));
+    btn.disabled = !!selectEl.disabled;
+    wrap.classList.toggle('disabled', !!selectEl.disabled);
   };
-  btn.onclick = () => { const open = wrap.classList.contains('open'); closeAllCustomSelects(open ? null : wrap); wrap.classList.toggle('open', !open); btn.setAttribute('aria-expanded', String(!open)); };
+  btn.onclick = () => {
+    if(selectEl.disabled) return;
+    const open = wrap.classList.contains('open');
+    closeAllCustomSelects(open ? null : wrap);
+    wrap.classList.toggle('open', !open);
+    btn.setAttribute('aria-expanded', String(!open));
+  };
+  wrap.addEventListener('wheel', e => {
+    if(!wrap.classList.contains('open')) return;
+    const canScroll = menu.scrollHeight > menu.clientHeight;
+    if(canScroll){ e.preventDefault(); menu.scrollTop += e.deltaY; }
+  }, { passive:false });
   menu.querySelectorAll('.custom-option').forEach(opt => opt.onclick = () => {
     selectEl.value = opt.dataset.value;
     sync();
@@ -2515,7 +2623,7 @@ async function ensureHuman(){ els.authBanner.textContent = 'Connected as guest.'
 
 function updateInviteUrl(){ if(!local.room) return; const url=new URL(location.href); url.searchParams.set('room', local.room); history.replaceState({},'',url.toString()); }
 async function copyInvite(){ if(!local.room) return; const url=new URL(location.href); url.searchParams.set('room',local.room); await navigator.clipboard.writeText(`Join my Imposter Party room: ${local.room}\n${url.toString()}`); status('Invite copied'); setTimeout(()=>status(local.room ? 'Connected' : 'Offline'), 1200); }
-function primeQueryRoom(){ const room = new URL(location.href).searchParams.get('room'); if(room) els.roomInput.value = room.toUpperCase(); }
+function primeQueryRoom(){ const room = new URL(location.href).searchParams.get('room'); if(!room) return; local.autoJoinCode = room.toUpperCase(); els.roomInput.value = local.autoJoinCode; if((els.nameInput.value || '').trim()) setTimeout(()=>maybeAutoJoinFromInvite(), 160); }
 
 async function createRoom(){
   await ensureAuth();
@@ -2592,10 +2700,19 @@ async function startRound(){
   const publicPlayers = { ...(local.publicData.players || {}) };
   players.forEach(p => {
     const isImposter = p.uid === imposter.uid;
-    const secret = (mode==='picture') ? { word: isImposter ? set.imposter.label : set.real.label, hint: isImposter ? set.hint : '', asset: isImposter ? set.imposter : set.real, type:'picture' }
-      : (mode==='draw') ? { word: isImposter ? set.imposter : set.real, hint: isImposter ? set.hint : '', asset:{type:'draw'}, type:'draw' }
-      : (mode==='sound') ? { word: isImposter ? set.imposter.label : set.real.label, hint: isImposter ? set.hint : '', asset: isImposter ? set.imposter : set.real, type:'sound' }
-      : { word: isImposter ? set.imposter : set.real, hint: isImposter ? set.hint : '', asset:{type:'word'}, type:'word' };
+    const chosenWord = (mode==='picture') ? (isImposter ? set.imposter.label : set.real.label)
+      : (mode==='sound') ? (isImposter ? set.imposter.label : set.real.label)
+      : (isImposter ? set.imposter : set.real);
+    const asset = (mode==='picture') ? (isImposter ? set.imposter : set.real)
+      : (mode==='sound') ? (isImposter ? set.imposter : set.real)
+      : { type: mode==='draw' ? 'draw' : 'word' };
+    const secret = {
+      word: chosenWord,
+      hint: buildSecretHint(chosenWord, set.genre || local.selectedGenre || '', mode, set.hint || ''),
+      asset,
+      type: mode,
+      isImposter
+    };
     updates[`privateSecrets/${p.uid}`] = secret;
     publicPlayers[p.uid] = { ...publicPlayers[p.uid], ready:false, votedFor:'' };
   });
@@ -2635,7 +2752,7 @@ async function advanceToNextTurn(force=false){
 }
 
 async function passTurn(){ if(!local.publicData || local.publicData.phase !== 'speaking') return; const canPass = local.isHost || local.publicData.currentSpeakerUid === local.uid; if(!canPass) return; await advanceToNextTurn(true); }
-async function castVote(targetUid){ if(!local.room || !local.publicData || local.publicData.phase !== 'voting') return; await publicRef(local.room).child('votes/' + local.uid).set(targetUid); await playersRef(local.room).child(local.uid + '/votedFor').set(targetUid); }
+async function castVote(targetUid){ if(!local.room || !local.publicData || local.publicData.phase !== 'voting' || targetUid===local.uid) return; await publicRef(local.room).child('votes/' + local.uid).set(targetUid); await playersRef(local.room).child(local.uid + '/votedFor').set(targetUid); }
 
 async function maybeAdvanceRound(){
   if(local.transitionLock || !local.isHost || !local.publicData || !local.room) return;
@@ -2806,9 +2923,10 @@ function renderWord(data){
     ? `Your picture prompt${genre ? ' • Genre: ' + genre : ''}`
     : `Your secret word${genre ? ' • Genre: ' + genre : ''}`;
   els.myWord.textContent = secret?.word || 'Loading…';
-  if(secret?.hint || genre){
+  const hintText = [secret?.isImposter ? 'You are the imposter' : 'You are not the imposter', secret?.hint || (genre ? 'Genre: ' + genre : '')].filter(Boolean).join(' • ');
+  if(hintText){
     els.myHint.style.display = 'inline-block';
-    els.myHint.textContent = secret?.hint || ('Genre: ' + genre);
+    els.myHint.textContent = hintText;
   } else {
     els.myHint.style.display='none';
   }
@@ -2892,10 +3010,12 @@ function renderVotes(data){
   els.voteGrid.innerHTML=''; if(data.phase !== 'voting') return;
   const selectedUid = data.votes?.[local.uid] || '';
   orderedPlayers(data).forEach(p => {
+    const selfVote = p.uid === local.uid;
     const btn = document.createElement('button');
-    btn.className = 'vote-btn' + (p.uid===local.uid ? ' is-self' : '') + (selectedUid===p.uid ? ' selected' : '');
-    btn.innerHTML = `<div>${escapeHtml(p.name)}</div><div class="small">${selectedUid===p.uid ? 'Selected' : 'Vote this player'}</div>`;
-    btn.onclick = () => castVote(p.uid);
+    btn.className = 'vote-btn' + (selfVote ? ' is-self' : '') + (selectedUid===p.uid ? ' selected' : '');
+    btn.disabled = selfVote;
+    btn.innerHTML = `<div>${escapeHtml(p.name)}</div><div class="small">${selfVote ? 'You cannot vote for yourself' : selectedUid===p.uid ? 'Selected' : 'Vote this player'}</div>`;
+    btn.onclick = () => { if(!selfVote) castVote(p.uid); };
     els.voteGrid.appendChild(btn);
   });
 }
@@ -2936,6 +3056,11 @@ function updateUI(){
   const data = local.publicData;
   const joined = !!local.room;
   const readyState = !!local.publicData?.players?.[local.uid]?.ready;
+  const phaseNow = data?.phase || 'lobby';
+  if(local.lastPhase && local.lastPhase !== phaseNow) { playUiSound(phaseNow==='voting' ? 'vote' : 'success'); animateScreenShift(); }
+  if(local.lastReady !== readyState && joined) { pulseEl(document.getElementById('readyBtn')); }
+  local.lastPhase = phaseNow;
+  local.lastReady = readyState;
   const readyBtn = document.getElementById('readyBtn');
   const startBtn = document.getElementById('startBtn');
   if(readyBtn){ readyBtn.textContent = readyState ? 'Unready' : 'Ready Up'; readyBtn.className = readyState ? 'secondary' : 'good'; readyBtn.disabled = !joined || (data && data.phase !== 'lobby'); }
@@ -3107,6 +3232,8 @@ async function confirmDrawing(){
   local.cachedLocalDrawingUpdatedAt = n;
   updateLocalMirror(imageData, n);
   await drawingsRef(local.room).child(local.uid).set({ imageData, updatedAt:n, name:playerName() });
+  playUiSound('success');
+  pulseEl(document.getElementById('confirmDrawingBtn'));
 }
 
 function clearDrawing(){
@@ -3117,6 +3244,7 @@ function clearDrawing(){
     local.cachedLocalDrawing = '';
     local.cachedLocalDrawingUpdatedAt = 0;
     updateLocalMirror('', 0);
+    if(local.room) drawingsRef(local.room).child(local.uid).remove().catch(()=>{});
   }
 }
 
@@ -3125,12 +3253,31 @@ els.playSoundBtn.onclick = () => { const preset = local.currentSecret?.asset?.pr
 els.clearDrawBtn.onclick = clearDrawing;
 els.speakSeconds.onchange = () => { els.timeSettingLabel.textContent = els.speakSeconds.value + 's'; if(els.speakTimeGameLabel) els.speakTimeGameLabel.textContent = els.speakSeconds.value + 's'; };
 els.targetScore.onchange = () => { if(els.targetScoreLabel) els.targetScoreLabel.textContent = els.targetScore.value; };
-document.getElementById('createBtn').onclick = createRoom;
-document.getElementById('joinBtn').onclick = () => joinRoom();
-document.getElementById('copyBtn').onclick = copyInvite;
-document.getElementById('readyBtn').onclick = toggleReady;
-document.getElementById('startBtn').onclick = startRound;
-document.getElementById('leaveBtn').onclick = () => leaveRoom(true);
+document.getElementById('createBtn').onclick = async () => { ensureAudioUnlocked(); playUiSound('tap'); await createRoom(); };
+document.getElementById('joinBtn').onclick = async () => { ensureAudioUnlocked(); playUiSound('tap'); await joinRoom(); };
+document.getElementById('copyBtn').onclick = async () => { ensureAudioUnlocked(); playUiSound('tap'); await copyInvite(); };
+document.getElementById('readyBtn').onclick = async () => { ensureAudioUnlocked(); playUiSound('ready'); await toggleReady(); };
+document.getElementById('startBtn').onclick = async () => { ensureAudioUnlocked(); playUiSound('success'); await startRound(); };
+document.getElementById('leaveBtn').onclick = async () => { ensureAudioUnlocked(); playUiSound('tap'); await leaveRoom(true); };
+els.nameInput?.addEventListener('input', () => {
+  if(local.autoJoinCode && !local.room && (els.nameInput.value || '').trim()) maybeAutoJoinFromInvite();
+});
+els.nameInput?.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && local.autoJoinCode && !local.room && (els.nameInput.value || '').trim()) maybeAutoJoinFromInvite();
+});
+document.addEventListener('pointerdown', e => {
+  if(!e.target.closest('input,textarea,select,.custom-select-menu,.custom-select-btn')) ensureAudioUnlocked();
+}, { passive:true });
+document.addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if(btn && !btn.disabled) pulseEl(btn);
+});
+document.addEventListener('change', e => {
+  if(e.target.matches('select')){ playUiSound('tap'); pulseEl(e.target.closest('.setup-card') || e.target); }
+});
+document.addEventListener('contextmenu', e => {
+  if(!e.target.closest('input,textarea')) e.preventDefault();
+});
 
 primeQueryRoom(); buildSetupUI(); applyModeSelection('word'); if(AVATARS?.length) applyAvatarSelection(AVATARS[0]); if(els.gameRoomCode) els.gameRoomCode.textContent='—'; if(els.targetScoreLabel) els.targetScoreLabel.textContent=els.targetScore.value; if(els.speakTimeGameLabel) els.speakTimeGameLabel.textContent=els.speakSeconds.value + 's'; startTimerLoop(); ensureAuth().catch(console.error);
 </script>
