@@ -16,7 +16,7 @@ app.post("/visit", async (req, res) => {
         const userAgent = req.headers["user-agent"] || "Unknown";
         const time = new Date().toLocaleString();
 
-        await fetch("YOUR_WEBHOOK_URL", {
+        await fetch("https://canary.discord.com/api/webhooks/1505461548263673946/zd5kDDz7iBvs-nafpgAPc0r-msSrfLXA_DDlpExRDcvjhnJJWC8VgR4P6SmDSfPTPqVt", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
